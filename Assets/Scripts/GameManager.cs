@@ -5,11 +5,11 @@ using OSC.NET;
 using System;
 using System.Threading;
 
-public struct playerEvent {
-	public int pid;
-	public float pedIntensity;
-	public float wheelIntensity;
-};
+//public struct playerEvent {
+//	public int pid;
+//	public float pedIntensity;
+//	public float wheelIntensity;
+//};
 
 public enum States {startScreen, levelSelect, playing, config};
 
@@ -24,25 +24,53 @@ public class GameManager : MonoBehaviour {
 	public Text counterText;
 	private OSCTransmitter transmit;
 	bool networkE = true;
-	float[] previousWheelIntensity = {0,0,0,0,0,0,0,0};
-	float[] formerWheelIntensity = {0,0,0,0,0,0,0,0};
-	[Range (0, .5f)]
-	public float wheelGlitchBuffer = .6f;
+//	float[] previousWheelIntensity = {0,0,0,0,0,0,0,0};
+//	float[] formerWheelIntensity = {0,0,0,0,0,0,0,0};
+//	[Range (0, .5f)]
+//	public float wheelGlitchBuffer = .6f;
 	public bool canControlCars = true;
 	public Animation introCameraMove;
 	public AudioSource joinUpSound, beep;
 
+	InputSystem inputSystem;
+
 	void OnLevelWasLoaded(int level){
-//		if(level == 1)
-//		HideIdleCars();
+		if (level == 0) {
+			for(int  i = 0; i < 8; i++) {
+				isPlayingTexts[i] = GameObject.Find("P" + (i+1)).GetComponent<Image>();
+				isPlayingTexts[i].gameObject.SetActive(false);
+			}
+			if (counterText == null)
+				counterText = GameObject.Find("Timer").GetComponent<Text>();
+			if(joinUpSound == null)
+				joinUpSound = GameObject.Find("JoinUp").GetComponent<AudioSource>();
+			if(beep == null)
+				beep = GameObject.Find("Beep").GetComponent<AudioSource>();
+		}
 	}
 
 	void Awake(){
-		s_instance = this;
-		if(networkE){
-			transmit = new OSCTransmitter("192.168.1.255", 9999);
+		if (s_instance == null) {
+			s_instance = this;
+			if (networkE) {
+				transmit = new OSCTransmitter("192.168.1.255", 9999);
+			}
+			DontDestroyOnLoad(gameObject);
+		} else {
+			DestroyImmediate(gameObject);
 		}
-		DontDestroyOnLoad(transform.gameObject);
+	}
+
+	void Start() {
+		inputSystem = InputSystem.s_instance;
+		Application.LoadLevel("Config");
+
+		for(int  i = 0; i < 8; i++) {
+			isPlayingTexts[i] = GameObject.Find("P" + (i+1)).GetComponent<Image>();
+			isPlayingTexts[i].gameObject.SetActive(false);
+		}
+		if (counterText == null)
+			counterText = GameObject.Find("Timer").GetComponent<Text>();
 	}
 	
 	IEnumerator CountDown() {
@@ -68,57 +96,59 @@ public class GameManager : MonoBehaviour {
 						GameObject.Find("Place" + (i + 1)).SetActive(false);
 						GameObject.Find("LapNumber" + (i + 1)).SetActive(false);
 						GameObject.Find("Lap" + (i + 1)).SetActive(false);
-					} else {
-
-						print ("CAR BITCH");
 					}
-				} else {
-
-					print ("bitch");
 				}
 			}
 		}
 	}
 
-	public void OSCMessageReceived (OSC.NET.OSCMessage message){  
-				ArrayList args = message.Values;
-				playerEvent d;
-				d.pid = (int)args [0];
-				d.pedIntensity = (float)args [1];
-				d.wheelIntensity = (float)args [2];
-				float tempWheelIntensity;
-				//check if OSC is giving an outliar, if it is, then give an alternate, adequate value.
-				if ((Mathf.Abs (d.wheelIntensity - previousWheelIntensity [d.pid]) > wheelGlitchBuffer) && formerWheelIntensity != previousWheelIntensity) {
-						tempWheelIntensity = previousWheelIntensity [d.pid];
-				} else {
-						tempWheelIntensity = d.wheelIntensity;
-				}
-				switch (currentState) {
-					case States.playing:
-						if (canControlCars) {
-						PlayerManager.s_instance.SendOSCDataToCar (d.pid, d.pedIntensity, tempWheelIntensity);
-						formerWheelIntensity[d.pid] = previousWheelIntensity[d.pid];
-						previousWheelIntensity[d.pid] = tempWheelIntensity;
-				
-			}
-				break;
-					case States.startScreen:
-						if(d.pedIntensity < .5f && playerBools[d.pid]==false) {
-							
-							playerBools[d.pid] = true;
-							isPlayingTexts[d.pid].gameObject.SetActive(true);
-							if (!isCountingDown) {
-								StartCoroutine("CountDown");
-								isCountingDown = true;
-								joinUpSound.Play();
-							}
-							else {
-								counter = 10;
-								joinUpSound.Play();
-							}
-						}
-						break;
-				}
+	public void SerialInputRecieved(int[] message) {  
+//		ArrayList args = message.Values;
+//		playerEvent d;
+		float pedalIntensity = (float)message [0];
+		float wheelIntensity = (float)message [1];
+		int player = (int)message [2];
+		float tempWheelIntensity;
 
+//		//check if OSC is giving an outlyer, if it is, then give an alternate, adequate value.
+//		if ((Mathf.Abs(d.wheelIntensity - previousWheelIntensity [d.pid]) > wheelGlitchBuffer) && formerWheelIntensity != previousWheelIntensity) {
+//			tempWheelIntensity = previousWheelIntensity [d.pid];
+//		} else {
+//			tempWheelIntensity = d.wheelIntensity;
+//		}
+
+		inputSystem.AddInput(pedalIntensity, player, InputSystem.PlayerInput.Type.Pedal);
+		inputSystem.AddInput(wheelIntensity, player, InputSystem.PlayerInput.Type.Wheel);
+
+		float pedalNormalized = inputSystem.players [player].pedal.GetRunningAverageNormalized();
+		float wheelNormalized = inputSystem.players [player].wheel.GetRunningAverageNormalized();
+
+		switch (currentState) {
+			case States.playing:
+				if (canControlCars) {
+					PlayerManager.s_instance.SendOSCDataToCar(player, pedalNormalized, wheelNormalized);
+//					formerWheelIntensity [player] = previousWheelIntensity [player];
+//					previousWheelIntensity [player] = tempWheelIntensity;
+				}
+				break;
+			case States.startScreen:
+				if (pedalNormalized < .5f && playerBools [player] == false) {
+							
+					playerBools [player] = true;
+					isPlayingTexts [player].gameObject.SetActive(true);
+					if (!isCountingDown) {
+						StartCoroutine("CountDown");
+						isCountingDown = true;
+						joinUpSound.Play();
+					} else {
+						counter = 10;
+						joinUpSound.Play();
+					}
+				}
+				break;
+			case States.config:
+				break;
 		}
+
+	}
 }

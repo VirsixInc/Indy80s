@@ -52,6 +52,14 @@ public class InputSystem : MonoBehaviour {
 			
 			return average;
 		}
+
+		public float GetRunningAverageNormalized() {
+			float average = GetRunningAverage();
+
+			float diff = max - min;
+
+			return average / diff;
+		}
 		
 		public void AddValue(float value) {
 			if (values.Count > 10)
@@ -66,7 +74,7 @@ public class InputSystem : MonoBehaviour {
 //	
 //	public State state = State.Normal;
 	
-	PlayerInput[] players;
+	public PlayerInput[] players;
 
 	public static InputSystem s_instance;
 
@@ -74,7 +82,9 @@ public class InputSystem : MonoBehaviour {
 		if(s_instance == null) {
 			s_instance = this;
 		} else {
-			Destroy(gameObject);
+			enabled = false;
+			return;
+//			Destroy(gameObject);
 		}
 		players = new PlayerInput[NUM_PLAYERS];
 		

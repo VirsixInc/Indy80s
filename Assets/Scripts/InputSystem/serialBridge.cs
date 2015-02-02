@@ -40,7 +40,7 @@ public class serialBridge : MonoBehaviour {
   public void Update (){
     lock (packetQueue) {
       foreach (int[] message in packetQueue) {
-        BroadcastMessage ("serialInputRecieved", message, SendMessageOptions.DontRequireReceiver);
+        BroadcastMessage ("SerialInputRecieved", message, SendMessageOptions.DontRequireReceiver);
         print(message[0] + "  " + message[1] + "  " + message[2]);
       }
       packetQueue.Clear ();
