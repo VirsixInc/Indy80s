@@ -18,8 +18,7 @@ public class serialBridge : MonoBehaviour {
   int readTimeout = 20;
 
   private List<int[]> packetQueue = new List<int[]>();
-
-
+	
   void Start () {
     try {
       stream = new SerialPort(portOne, baudRate);
@@ -41,11 +40,12 @@ public class serialBridge : MonoBehaviour {
     lock (packetQueue) {
       foreach (int[] message in packetQueue) {
         BroadcastMessage ("SerialInputRecieved", message, SendMessageOptions.DontRequireReceiver);
-        print(message[0] + "  " + message[1] + "  " + message[2]);
-      }
+//        print(message[0] + "  " + message[1] + "  " + message[2]);
+	  }
       packetQueue.Clear ();
     }
   }
+
   private int[] parseIndyData(string stringToParse){
     string[] stringToSend = stringToParse.Split(',');
     int[] valsToSend = new int[3];
@@ -82,6 +82,4 @@ public class serialBridge : MonoBehaviour {
       }
     }
   }
-
 }
- 

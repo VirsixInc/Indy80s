@@ -14,11 +14,13 @@ public class InputSystem : MonoBehaviour {
 		InputData wheelData, pedalData;
 		public PlayerInput() {
 			wheelData = new InputData();
-			wheelData.min = wheelData.max = 0f;
+			wheelData.min = 9999f;
+			wheelData.max = -9999f;
 			wheelData.values = new Queue<float>();
 
 			pedalData = new InputData();
-			pedalData.min = pedalData.max = 0f;
+			pedalData.min = 9999f;
+			pedalData.max = -9999f;
 			pedalData.values = new Queue<float>();
 		}
 		
@@ -43,22 +45,21 @@ public class InputSystem : MonoBehaviour {
 			float average = 0f;
 			if (values.Count == 0)
 				return average;
-			Queue<float>.Enumerator iter = values.GetEnumerator();
-			do {
-				average += iter.Current;
-			} while (iter.MoveNext());
-			
+
+			foreach(float value in values) {
+				average += value;
+			}
+
 			average /= (float)values.Count;
 			
 			return average;
 		}
 
 		public float GetRunningAverageNormalized() {
-			float average = GetRunningAverage();
+			float average = Mathf.Clamp(GetRunningAverage(), min, max);
+			float normalized = (average - min) / (max - min);
 
-			float diff = max - min;
-
-			return average / diff;
+			return normalized;
 		}
 		
 		public void AddValue(float value) {
@@ -92,7 +93,7 @@ public class InputSystem : MonoBehaviour {
 			players[i] = new PlayerInput();
 		}
 	}
-	
+
 	public void AddInput(float value, int player, PlayerInput.Type type) {
 		if (type == PlayerInput.Type.Pedal) {
 			players[player].pedal.AddValue(value);
@@ -103,17 +104,29 @@ public class InputSystem : MonoBehaviour {
 
 	public void LogMinimum(int player, InputSystem.PlayerInput.Type type) {
 		if (type == PlayerInput.Type.Pedal) {
-			players[player].pedal.min = players[player].pedal.GetRunningAverage();
+			float average = players[player].pedal.GetRunningAverage();
+			if(average < players[player].pedal.min)
+				players[player].pedal.min = average;
+			print ("player " + player + type.ToString() + " " + players[player].pedal.min);
 		} else if (type == PlayerInput.Type.Wheel) {
-			players[player].wheel.min = players[player].wheel.GetRunningAverage();
+			float average = players[player].wheel.GetRunningAverage();
+			if(average < players[player].wheel.min)
+				players[player].wheel.min = average;
+			print ("player " + player + type.ToString() + " " + players[player].wheel.min);
 		}
 	}
 
 	public void LogMaximum(int player, InputSystem.PlayerInput.Type type) {
 		if (type == PlayerInput.Type.Pedal) {
-			players[player].pedal.max = players[player].pedal.GetRunningAverage();
+			float average = players[player].pedal.GetRunningAverage();
+			if(average > players[player].pedal.max)
+				players[player].pedal.max = average;
+			print ("player " + player + type.ToString() + " " + players[player].pedal.max);
 		} else if (type == PlayerInput.Type.Wheel) {
-			players[player].wheel.max = players[player].wheel.GetRunningAverage();
+			float average = players[player].wheel.GetRunningAverage();
+			if(average > players[player].wheel.max)
+				players[player].wheel.max = average;
+			print ("player " + player + type.ToString() + " " + players[player].wheel.max);
 		}
 	}
 }

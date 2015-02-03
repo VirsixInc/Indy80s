@@ -9,7 +9,7 @@ public class Configure : MonoBehaviour {
 	InputSystem.PlayerInput.Type currentType = InputSystem.PlayerInput.Type.Pedal;
 	bool logMinimum = true;
 
-	float timer = 0f;
+//	float timer = 0f;
 
 	public float waitTime = 3f;
 
@@ -32,29 +32,40 @@ public class Configure : MonoBehaviour {
 
 //		if (timer > waitTime) {
 //			timer = 0f;
-		if(Input.GetKeyDown(KeyCode.Space)) {
+		if(Input.GetKey(KeyCode.Space)) {
 			if(currentType == InputSystem.PlayerInput.Type.Pedal) {
 				if(logMinimum) {
 					inputSystem.LogMinimum(currentPlayer, InputSystem.PlayerInput.Type.Pedal);
-					logMinimum = false;
 				} else {
 					inputSystem.LogMaximum(currentPlayer, InputSystem.PlayerInput.Type.Pedal);
+				}
+			} else if(currentType == InputSystem.PlayerInput.Type.Wheel) {
+				if(logMinimum) {
+					inputSystem.LogMinimum(currentPlayer, InputSystem.PlayerInput.Type.Wheel);
+				} else {
+					inputSystem.LogMaximum(currentPlayer, InputSystem.PlayerInput.Type.Wheel);
+				}
+			}
+		}
+		if(Input.GetKeyUp(KeyCode.Space)) {
+			if(currentType == InputSystem.PlayerInput.Type.Pedal) {
+				if(logMinimum) {
+					logMinimum = false;
+				} else {
 					logMinimum = true;
 					currentType = InputSystem.PlayerInput.Type.Wheel;
 				}
 			} else if(currentType == InputSystem.PlayerInput.Type.Wheel) {
 				if(logMinimum) {
-					inputSystem.LogMinimum(currentPlayer, InputSystem.PlayerInput.Type.Wheel);
 					logMinimum = false;
 				} else {
-					inputSystem.LogMaximum(currentPlayer, InputSystem.PlayerInput.Type.Wheel);
 					logMinimum = true;
 					currentType = InputSystem.PlayerInput.Type.Pedal;
-
+						
 					currentPlayer++;
 					if(currentPlayer > InputSystem.NUM_PLAYERS - 1) {
 						Application.LoadLevel("Intro");
-//						inputSystem.state = InputSystem.State.Normal;
+						//						inputSystem.state = InputSystem.State.Normal;
 						enabled = false;
 						return;
 					}
