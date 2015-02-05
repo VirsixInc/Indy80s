@@ -3,19 +3,18 @@
 using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
-using OSC.NET;
 using System;
 using System.Threading;
-
-//public struct playerEvent {
-//	public int pid;
-//	public float pedIntensity;
-//	public float wheelIntensity;
-//};
 
 public enum States {startScreen, levelSelect, playing, config};
 
 public class GameManager : MonoBehaviour {
+
+  public bool debugMode;
+#if LOG_SERIAL
+	public bool showDebugStr = true;
+	string[] serialInfo = new string[8];
+#endif
 
 	public static GameManager s_instance;
 	public static States currentState = States.config;
@@ -24,22 +23,14 @@ public class GameManager : MonoBehaviour {
 	bool isCountingDown = false;
 	public Image[] isPlayingTexts;
 	public Text counterText;
-//	private OSCTransmitter transmit;
-//	bool networkE = true;
-//	float[] previousWheelIntensity = {0,0,0,0,0,0,0,0};
-//	float[] formerWheelIntensity = {0,0,0,0,0,0,0,0};
-//	[Range (0, .5f)]
-//	public float wheelGlitchBuffer = .6f;
 	public bool canControlCars = true;
-//	public Animation introCameraMove;
+
 	public AudioSource joinUpSound, beep;
 
 	InputSystem inputSystem;
 
-#if LOG_SERIAL
-	string[] serialInfo = new string[8];
-	bool showDebugStr = true;
-#endif
+  int rotTestInput;
+  int pedTestInput;
 
 	void OnLevelWasLoaded(int level){
 		if (level == 0) {
@@ -60,9 +51,6 @@ public class GameManager : MonoBehaviour {
 	void Awake(){
 		if (s_instance == null) {
 			s_instance = this;
-//			if (networkE) {
-//				transmit = new OSCTransmitter("192.168.1.255", 9999);
-//			}
 			DontDestroyOnLoad(gameObject);
 		} else {
 			DestroyImmediate(gameObject);
@@ -71,7 +59,11 @@ public class GameManager : MonoBehaviour {
 
 	void Start() {
 		inputSystem = InputSystem.s_instance;
-		Application.LoadLevel("Config");
+    if(debugMode){
+      setDebugVals(0);
+    }else{
+    }
+    Application.LoadLevel("Config");
 
 		for(int  i = 0; i < 8; i++) {
 			isPlayingTexts[i] = GameObject.Find("P" + (i+1)).GetComponent<Image>();
@@ -81,6 +73,12 @@ public class GameManager : MonoBehaviour {
 			counterText = GameObject.Find("Timer").GetComponent<Text>();
 	}
 
+  void setDebugVals(int id){
+    inputSystem.players[id].wheelData.min = 0;
+    inputSystem.players[id].wheelData.max = 500;
+    inputSystem.players[id].pedalData.min = 0;
+    inputSystem.players[id].pedalData.max = 500;
+  }
 #if LOG_SERIAL
 	void Update() {
 		if(Input.GetKeyDown(KeyCode.Q)) {
@@ -116,9 +114,7 @@ public class GameManager : MonoBehaviour {
 			beep.Play();
 		}
 		Application.LoadLevel (1);
-//		yield return new WaitForSeconds (introCameraMove.animation.clip.length);
 		currentState = States.playing;
-		//HideIdleCars ();
 	}
 
 
@@ -138,28 +134,18 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public void SerialInputRecieved(int[] message) {  
-//		ArrayList args = message.Values;
-//		playerEvent d;
+    if(debugMode && message.Length != 4){
+      return;
+    }
 		float wheelIntensity = (float)message [0];
 		float pedalIntensity = (float)message [1];
 		int player = (int)message [2];
-//		float tempWheelIntensity;
-
-//		//check if OSC is giving an outlyer, if it is, then give an alternate, adequate value.
-//		if ((Mathf.Abs(d.wheelIntensity - previousWheelIntensity [d.pid]) > wheelGlitchBuffer) && formerWheelIntensity != previousWheelIntensity) {
-//			tempWheelIntensity = previousWheelIntensity [d.pid];
-//		} else {
-//			tempWheelIntensity = d.wheelIntensity;
-//		}
 
 		inputSystem.AddInput(pedalIntensity, player, InputSystem.PlayerInput.Type.Pedal);
 		inputSystem.AddInput(wheelIntensity, player, InputSystem.PlayerInput.Type.Wheel);
 
 		float pedalNormalized = inputSystem.players [player].pedal.GetRunningAverageNormalized();
 		float wheelNormalized = -(inputSystem.players [player].wheel.GetRunningAverageNormalized() * 2f - 1f);
-
-//		print("player: " + player + " pedal: " + (int)pedalNormalized + " wheel: " + (int)wheelNormalized);
-
 #if LOG_SERIAL
 		serialInfo[player] = "Player " + player + "\n" + 
 			"  Pedal: \n" +
@@ -167,19 +153,14 @@ public class GameManager : MonoBehaviour {
 			"\n  Wheel: \n" +
 				"    Norm: " + wheelNormalized.ToString("F2") + " Cur: " + wheelIntensity + " Min: " + inputSystem.players[player].wheel.min + " Max: " + inputSystem.players[player].wheel.max;
 #endif
-
-//		if(player == 0)
-//			print ("player " + player + " pedal " + pedalNormalized + " wheel " + wheelNormalized);
-
 		switch (currentState) {
 			case States.playing:
 				if (canControlCars) {
 					PlayerManager.s_instance.SendOSCDataToCar(player, pedalNormalized, wheelNormalized);
-//					formerWheelIntensity [player] = previousWheelIntensity [player];
-//					previousWheelIntensity [player] = tempWheelIntensity;
 				}
 				break;
 			case States.startScreen:
+        print(pedalNormalized);
 				if (pedalNormalized < .5f && playerBools [player] == false) {
 					playerBools [player] = true;
 					isPlayingTexts [player].gameObject.SetActive(true);
@@ -198,17 +179,31 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
-#if LOG_SERIAL
 	void OnGUI() {
-		if(showDebugStr) {
-			string debugStr = "";
-			for(int i = 0; i < InputSystem.NUM_PLAYERS; i++) {
-				debugStr += serialInfo[i] + "\n\n";
-			}
-			GUI.skin.box.alignment = TextAnchor.UpperLeft;
-			print (GUI.skin.box.alignment.ToString());
-			GUI.Box (new Rect (0f, 0f, 300f, 600f), debugStr, GUI.skin.box);
-		}
-	}
+    if(debugMode){
+      rotTestInput = (int)(GUI.HorizontalSlider(new Rect(50, 25, 100, 30), rotTestInput, 0, 500));
+      pedTestInput = (int)(GUI.HorizontalSlider(new Rect(50, 50, 100, 30), pedTestInput, 0, 500));
+
+      int[] testArr = new int[4]; // length of 4 is a debug array
+      testArr[0] = rotTestInput;
+      testArr[1] = pedTestInput;
+      testArr[2] = 0;
+      testArr[3] = 0; // defines as debug
+
+      SerialInputRecieved(testArr);
+
+      
+
+#if LOG_SERIAL
+      if(showDebugStr) {
+        string debugStr = "";
+        for(int i = 0; i < InputSystem.NUM_PLAYERS; i++) {
+          debugStr += serialInfo[i] + "\n\n";
+        }
+        GUI.skin.box.alignment = TextAnchor.UpperLeft;
+        GUI.Box (new Rect (0f, 0f, 300f, 600f), debugStr, GUI.skin.box);
+      }
 #endif
+    }
+	}
 }

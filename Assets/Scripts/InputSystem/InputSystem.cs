@@ -11,7 +11,7 @@ public class InputSystem : MonoBehaviour {
 			Wheel, Pedal
 		}
 		
-		InputData wheelData, pedalData;
+		public InputData wheelData, pedalData;
 		public PlayerInput() {
 			wheelData = new InputData();
 			wheelData.min = 9999f;
