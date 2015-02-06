@@ -17,6 +17,8 @@ public class CarData : MonoBehaviour {
 	public float invertPedal = 0f;
 	public AudioSource engine;
 	public float enginePitchRatio = .01f;
+	float tempThrust;
+	float tempTurnStrength;
 
 	MotoPhysics myHoverCarControl;
 	CarAnimationController myCarAnimationController;
@@ -29,6 +31,8 @@ public class CarData : MonoBehaviour {
   float deathDelay = 1f;
 	
 	void Start() {
+		tempThrust = GetComponent<MotoPhysics> ().forwardThrust;
+		tempTurnStrength = GetComponent<MotoPhysics> ().turnStrength;
 		engine = GameObject.Find ("CarRaceSound" + id.ToString ()).GetComponent<AudioSource>();
 		placeInRaceHolder = GameObject.Find ("Place" + id.ToString ()).GetComponent<Image>();
 		if (placeInRaceHolder == null || placeInRaceHolder.sprite == null) {
@@ -84,10 +88,9 @@ public class CarData : MonoBehaviour {
 		rigidbody.velocity = new Vector3(0,0,0);
 		foreach (MeshRenderer x in GetComponentsInChildren<MeshRenderer>())
 			x.enabled = false;
-    timeSinceDead = Time.time;
-
+    	timeSinceDead = Time.time;
 		gameObject.collider.enabled = true;
-    isRespawning = true;
+   		isRespawning = true;
   }
 	void Update() {
     float zRotation = gameObject.transform.rotation.eulerAngles.z;
@@ -96,15 +99,15 @@ public class CarData : MonoBehaviour {
         Explode();
       }
     }
-    if(timeSinceDead + deathDelay < Time.time && isRespawning){
+    if(timeSinceDead + deathDelay < Time.time && isRespawning){ //wyatts timer
       Transform spawnPosition = lastWayPoint.transform;
       transform.position = new Vector3 (spawnPosition.position.x, spawnPosition.position.y + 20, spawnPosition.position.z) ;
       transform.rotation = spawnPosition.rotation;
       foreach (MeshRenderer x in GetComponentsInChildren<MeshRenderer>())
         x.enabled = true;
       isRespawning = false;
-      myHoverCarControl.forwardThrust = 0;
-      myHoverCarControl.turnStrength = 0;
+      myHoverCarControl.forwardThrust = tempThrust;
+      myHoverCarControl.turnStrength = tempTurnStrength;
     }
 	}
 	
@@ -148,10 +151,6 @@ public class CarData : MonoBehaviour {
 		//we may want to take the negative value of this to invert order
 		distanceFromLastWayPoint = Vector3.Distance (lastWayPoint.transform.position, transform.position); //for debug
 		return Vector3.Distance(lastWayPoint.transform.position, transform.position);
-	}
-	
-	void Respawn() {
-		//TODO play some sort of respawn animation that resets the car position at the last waypoint
 	}
 
 	void PitchShift (float pedal) {

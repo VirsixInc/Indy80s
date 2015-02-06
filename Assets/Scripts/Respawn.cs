@@ -7,8 +7,8 @@ public class Respawn : MonoBehaviour {
 	public GameObject explosion;
 	public Transform spawnPosition;
 //	GameObject tempExplosion;
-	float tempAcl;
-	float tempTurn;
+	public float tempAcl;
+	public float tempTurn;
 	bool isRespawning = false;
 	
 	void Awake () {
