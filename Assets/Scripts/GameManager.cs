@@ -160,7 +160,6 @@ public class GameManager : MonoBehaviour {
 				}
 				break;
 			case States.startScreen:
-        print(pedalNormalized);
 				if (pedalNormalized < .5f && playerBools [player] == false) {
 					playerBools [player] = true;
 					isPlayingTexts [player].gameObject.SetActive(true);

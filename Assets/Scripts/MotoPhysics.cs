@@ -31,8 +31,7 @@ public class MotoPhysics : MonoBehaviour {
 	}
 
 	void FixedUpdate() {
-		Hover ();
-
+    Hover ();
 	}
 
 	void Hover () {

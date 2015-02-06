@@ -16,13 +16,17 @@ public class CarData : MonoBehaviour {
 	public float isInverted = 1;
 	public float invertPedal = 0f;
 	public AudioSource engine;
-	public float enginePitchRatio = .010f;
+	public float enginePitchRatio = .01f;
 
 	MotoPhysics myHoverCarControl;
 	CarAnimationController myCarAnimationController;
 	
 	public float distanceFromLastWayPoint;
 
+  public GameObject explodeFab;
+  bool isRespawning;
+  float timeSinceDead;
+  float deathDelay = 1f;
 	
 	void Start() {
 		engine = GameObject.Find ("CarRaceSound" + id.ToString ()).GetComponent<AudioSource>();
@@ -67,7 +71,6 @@ public class CarData : MonoBehaviour {
 				}
 			}
 		}
-		//print ("FUCK");
 //		placeInRaceHolder.sprite = playerManager.ReturnPlaceInRaceAssets() [currentPlace - 1].GetComponent<Image>().sprite; //sets HUD image of 1st, 2nd, 3rd
 	}
 	
@@ -76,7 +79,33 @@ public class CarData : MonoBehaviour {
 		
 	}
 	
+  void Explode(){
+		Instantiate(explodeFab, transform.position+new Vector3(0,4,0), Quaternion.identity);
+		rigidbody.velocity = new Vector3(0,0,0);
+		foreach (MeshRenderer x in GetComponentsInChildren<MeshRenderer>())
+			x.enabled = false;
+    timeSinceDead = Time.time;
+
+		gameObject.collider.enabled = true;
+    isRespawning = true;
+  }
 	void Update() {
+    float zRotation = gameObject.transform.rotation.eulerAngles.z;
+		if ((zRotation > 50f && zRotation < 140f) || (zRotation > 220 && zRotation < 310f)) {
+			if (isRespawning == false){
+        Explode();
+      }
+    }
+    if(timeSinceDead + deathDelay < Time.time && isRespawning){
+      Transform spawnPosition = lastWayPoint.transform;
+      transform.position = new Vector3 (spawnPosition.position.x, spawnPosition.position.y + 20, spawnPosition.position.z) ;
+      transform.rotation = spawnPosition.rotation;
+      foreach (MeshRenderer x in GetComponentsInChildren<MeshRenderer>())
+        x.enabled = true;
+      isRespawning = false;
+      myHoverCarControl.forwardThrust = 0;
+      myHoverCarControl.turnStrength = 0;
+    }
 	}
 	
 	public void ReceivePedalWheelInput (float newPedalIntensity, float newWheelIntensity) {
@@ -91,6 +120,9 @@ public class CarData : MonoBehaviour {
 	
 	//When car hits a new waypoint, set it to lastWaypoint hit.
 	void OnTriggerEnter(Collider other) {
+		if (other.gameObject.tag == "InstaKill" && isRespawning == false){
+      Explode();
+    }    
 		if (other.gameObject.tag == "WayPoint") {
 			lastWayPoint = other.gameObject;
 			//			print (lastWayPoint.GetComponent<PathNode>().ReturnDistanceToEnd());
