@@ -2,12 +2,52 @@
 
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.UI;
 using System;
 using System.Threading;
+using System.Text;
+using System.Xml;
+using System.Xml.Serialization;
+using System.IO;
 
 public enum States {startScreen, levelSelect, playing, config};
 
+[XmlRoot("inputContainer")]
+public class inputCont {
+  [XmlArray("Players"),XmlArrayItem("Player")]
+  public List<inputData> savedPlayers = new List<inputData>();
+  public inputData[] players;
+ 
+ 	public void Save(string path){
+ 		var serializer = new XmlSerializer(typeof(inputCont));
+ 		using(var stream = new FileStream(path, FileMode.Create))
+ 		{
+ 			serializer.Serialize(stream, this);
+ 		}
+ 	}
+ 
+ 	public static inputCont Load(string path){
+ 		var serializer = new XmlSerializer(typeof(inputCont));
+ 		using(var stream = new FileStream(path, FileMode.Open))
+ 		{
+ 			return serializer.Deserialize(stream) as inputCont;
+ 		}
+ 	}
+  public static inputCont LoadFromText(string text){
+ 		var serializer = new XmlSerializer(typeof(inputCont));
+ 		return serializer.Deserialize(new StringReader(text)) as inputCont;
+ 	}
+}
+
+public class inputData {
+  [XmlAttribute("name")]
+    public int id;
+    public float minPed;
+    public float maxPed;
+    public float minWheel;
+    public float maxWheel;
+}
 public class GameManager : MonoBehaviour {
 
   public bool debugMode;
@@ -15,6 +55,8 @@ public class GameManager : MonoBehaviour {
 	public bool showDebugStr = true;
 	string[] serialInfo = new string[8];
 #endif
+  public bool configured;
+   public TextAsset inputConfiguration;
 
 	public static GameManager s_instance;
 	public static States currentState = States.config;
@@ -28,9 +70,26 @@ public class GameManager : MonoBehaviour {
 	public AudioSource joinUpSound, beep;
 
 	InputSystem inputSystem;
+  inputCont thisInputCont;
 
   int rotTestInput;
   int pedTestInput;
+
+  void saveAllVals(){
+    thisInputCont = new inputCont();
+    for(int i = 0; i<8; i++){
+      inputData currInputData = new inputData();
+      currInputData.id = i;
+      currInputData.minPed = inputSystem.players[i].pedalData.min;
+      currInputData.maxPed = inputSystem.players[i].pedalData.max;
+      currInputData.minWheel = inputSystem.players[i].wheelData.min;
+      currInputData.maxWheel = inputSystem.players[i].wheelData.max;
+      thisInputCont.savedPlayers.Add(currInputData);
+    }
+   thisInputCont.Save(Path.Combine(Application.persistentDataPath, "configData.xml"));
+   print(Application.persistentDataPath);
+  print("SAVED XML");
+  }
 
 	void OnLevelWasLoaded(int level){
 		if (level == 0) {
@@ -63,8 +122,19 @@ public class GameManager : MonoBehaviour {
       setDebugVals(0);
     }else{
     }
-    Application.LoadLevel("Config");
 
+    if(configured){
+      thisInputCont = inputCont.Load(Path.Combine(Application.persistentDataPath, "configData.xml"));
+      for(int i = 0; i <8;i++){
+        inputSystem.players[i].pedalData.min = thisInputCont.savedPlayers[i].minPed;
+        inputSystem.players[i].pedalData.max = thisInputCont.savedPlayers[i].maxPed;
+        inputSystem.players[i].wheelData.min = thisInputCont.savedPlayers[i].minWheel;
+        inputSystem.players[i].wheelData.max = thisInputCont.savedPlayers[i].maxWheel;
+      }
+			currentState = States.startScreen;
+    }else{
+      Application.LoadLevel("Config");
+    }
 		for(int  i = 0; i < 8; i++) {
 			isPlayingTexts[i] = GameObject.Find("P" + (i+1)).GetComponent<Image>();
 			isPlayingTexts[i].gameObject.SetActive(false);
@@ -84,6 +154,9 @@ public class GameManager : MonoBehaviour {
 		if(Input.GetKeyDown(KeyCode.Q)) {
 			showDebugStr = !showDebugStr;
 		}
+		if(Input.GetKeyDown(KeyCode.W)) {
+      saveAllVals();
+    }
 
 		if (Input.GetKeyDown(KeyCode.S)) {
 			if(Application.loadedLevelName == "Config") {
@@ -160,6 +233,7 @@ public class GameManager : MonoBehaviour {
 				}
 				break;
 			case States.startScreen:
+				print("I'M AT START SCREEN");
 				if (pedalNormalized < .5f && playerBools [player] == false) {
 					playerBools [player] = true;
 					isPlayingTexts [player].gameObject.SetActive(true);
@@ -179,30 +253,26 @@ public class GameManager : MonoBehaviour {
 	}
 
 	void OnGUI() {
+//#if LOG_SERIAL
+    if(showDebugStr) {
+      string debugStr = "";
+      for(int i = 0; i < InputSystem.NUM_PLAYERS; i++) {
+        debugStr += serialInfo[i] + "\n\n";
+      }
+      GUI.skin.box.alignment = TextAnchor.UpperLeft;
+      GUI.Box (new Rect (0f, 0f, 300f, 900f), debugStr, GUI.skin.box);
+    }
+//#endif
     if(debugMode){
-      rotTestInput = (int)(GUI.HorizontalSlider(new Rect(50, 25, 100, 30), rotTestInput, 0, 500));
       pedTestInput = (int)(GUI.HorizontalSlider(new Rect(50, 50, 100, 30), pedTestInput, 0, 500));
+      rotTestInput = (int)(GUI.HorizontalSlider(new Rect(50, 25, 100, 30), rotTestInput, 0, 500));
 
       int[] testArr = new int[4]; // length of 4 is a debug array
       testArr[0] = rotTestInput;
       testArr[1] = pedTestInput;
       testArr[2] = 0;
       testArr[3] = 0; // defines as debug
-
       SerialInputRecieved(testArr);
-
-      
-
-#if LOG_SERIAL
-      if(showDebugStr) {
-        string debugStr = "";
-        for(int i = 0; i < InputSystem.NUM_PLAYERS; i++) {
-          debugStr += serialInfo[i] + "\n\n";
-        }
-        GUI.skin.box.alignment = TextAnchor.UpperLeft;
-        GUI.Box (new Rect (0f, 0f, 300f, 600f), debugStr, GUI.skin.box);
-      }
-#endif
     }
 	}
 }

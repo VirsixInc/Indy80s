@@ -95,6 +95,8 @@ public class MotoPhysics : MonoBehaviour {
 
 	IEnumerator SpeedBoost () {
 		float currentThrust = forwardThrust;
+//		float startTime = Time.time;
+		forwardThrust *= 2;
 		forwardThrust *= 4;
 
 		while (forwardThrust > currentThrust) {
