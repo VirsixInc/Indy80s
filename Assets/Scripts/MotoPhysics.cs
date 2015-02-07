@@ -37,22 +37,30 @@ public class MotoPhysics : MonoBehaviour {
 	void Hover () {
 
 		//if the front thruster, ray from position    , in direction, output data to, length of raycast, is hitting
-		if (Physics.Raycast (front.transform.position, -Vector3.up, out frontHit, 1000f)) {
-			if (frontHit.distance <= floatHeight && frontHit.collider.gameObject.tag != "WayPoint") {
+		if (Physics.Raycast (front.transform.position, -Vector3.up, out frontHit, 1000f)) { //FRONT
+			if (frontHit.distance <= floatHeight) {
 				thisRigidbody.AddForceAtPosition(Vector3.up * hoverForce * (1.0f - (frontHit.distance / floatHeight)), front.transform.position); //push up on the car if it is close to track
 			}
-			else { //if not hitting
-				thisRigidbody.AddForceAtPosition(-Vector3.up * hoverForce, front.transform.position); //push down on the car if it is in the air
-//				if (transform.rotation.eulerAngles.x >= 0) {
+//			else if (transform.rotation.eulerAngles.x <= 0){ //if not hitting
+//				print ("add force");
+//				thisRigidbody.AddForceAtPosition(-Vector3.up * hoverForce, front.transform.position); //push down on the car if it is in the air
+//				thisRigidbody.AddForceAtPosition(-Vector3.up * hoverForce/2, back.transform.position);
+//				
+//					thisRigidbody.AddForceAtPosition(-Vector3.up * hoverForce/2, front.transform.position); //extra push
+//				}
+				//				if (transform.rotation.eulerAngles.x >= 0) {
 //					thisRigidbody.AddForceAtPosition(Vector3.up * hoverForce, front.transform.position); //fixes offset in the air
 //				}
 //				else if (transform.rotation.eulerAngles.x <= 0) {
 //					thisRigidbody.AddForceAtPosition(Vector3.up * hoverForce, back.transform.position);
 //				}
+//			}
+			else{
+				thisRigidbody.AddForceAtPosition(-Vector3.up * hoverForce, front.transform.position);
 			}
 		}
 
-		if (Physics.Raycast (back.transform.position, -Vector3.up, out backHit, 1000f)) {
+		if (Physics.Raycast (back.transform.position, -Vector3.up, out backHit, 1000f)) { //BACK
 			if (backHit.distance <= floatHeight) {
 				thisRigidbody.AddForceAtPosition(Vector3.up * hoverForce * (1.0f - (backHit.distance / floatHeight)), back.transform.position); //push up on the car if it is close to track
 			}
@@ -60,6 +68,7 @@ public class MotoPhysics : MonoBehaviour {
 				thisRigidbody.AddForceAtPosition(-Vector3.up * hoverForce, back.transform.position); //push down on the car if it is in the air
 			}
 		}
+		transform.rotation = Quaternion.Euler(new Vector3 (transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, 0f)); //freeze Z axis
 	}
 
 	void ForwardThrust(){

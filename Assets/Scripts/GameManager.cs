@@ -97,7 +97,7 @@ public class GameManager : MonoBehaviour {
 						isCountingDown = true;
 						joinUpSound.Play();
 					} else {
-						counter = 10;
+						counter = 5;
 						joinUpSound.Play();
 					}
 				}
