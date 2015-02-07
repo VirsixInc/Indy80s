@@ -17,7 +17,6 @@ public class MotoPhysics : MonoBehaviour {
 	public bool invertTurning;
 	public bool invertAcl;
 	public float speedBoostDecrement = 100f;
-	public float bumpStrength = 1000;
 
 	void Start () {
 		thisRigidbody = GetComponent<Rigidbody> ();
@@ -39,12 +38,11 @@ public class MotoPhysics : MonoBehaviour {
 
 		//if the front thruster, ray from position    , in direction, output data to, length of raycast, is hitting
 		if (Physics.Raycast (front.transform.position, -Vector3.up, out frontHit, 1000f)) {
-			if (frontHit.distance <= floatHeight) {
+			if (frontHit.distance <= floatHeight && frontHit.collider.gameObject.tag != "WayPoint") {
 				thisRigidbody.AddForceAtPosition(Vector3.up * hoverForce * (1.0f - (frontHit.distance / floatHeight)), front.transform.position); //push up on the car if it is close to track
 			}
 			else { //if not hitting
-				thisRigidbody.AddForceAtPosition(-Vector3.up * hoverForce/2, front.transform.position); //push down on the car if it is in the air
-				thisRigidbody.AddForceAtPosition(-Vector3.up * hoverForce/2, back.transform.position);
+				thisRigidbody.AddForceAtPosition(-Vector3.up * hoverForce, front.transform.position); //push down on the car if it is in the air
 //				if (transform.rotation.eulerAngles.x >= 0) {
 //					thisRigidbody.AddForceAtPosition(Vector3.up * hoverForce, front.transform.position); //fixes offset in the air
 //				}
@@ -86,22 +84,9 @@ public class MotoPhysics : MonoBehaviour {
 		}
 	}
 
-	void OnCollisionEnter(Collision collision) {
-		if (collision.gameObject.tag == "Player") {
-			ContactPoint contact = collision.contacts[0];
-			//Instantiate(spark, contact.point, Quaternion.identity);
-			Vector3 pos = contact.point;
-			Vector3 collisionPointAtCarHeight= new Vector3(pos.x, transform.position.y, pos.z);
-			Vector3 directionOfBumpForce = transform.position - collisionPointAtCarHeight;
-			Debug.DrawRay (pos, directionOfBumpForce, Color.magenta);
-			transform.rigidbody.AddForceAtPosition (bumpStrength * directionOfBumpForce, collisionPointAtCarHeight);
-			//spawn a particle effect at the collision point and transform height
-		}
-	}
-
 	IEnumerator SpeedBoost () {
 		float currentThrust = forwardThrust;
-		forwardThrust *= 2;
+		forwardThrust *= 4;
 
 		while (forwardThrust > currentThrust) {
 			yield return new WaitForEndOfFrame();
