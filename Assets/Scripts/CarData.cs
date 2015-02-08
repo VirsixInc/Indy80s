@@ -93,8 +93,8 @@ public class CarData : MonoBehaviour {
 	//When car hits a new waypoint, set it to lastWaypoint hit.
 	void OnTriggerEnter(Collider other) {
 		if (other.gameObject.tag == "InstaKill" && isRespawning == false){
-      Explode();
-    }    
+		      StartCoroutine("Explode");
+		}    
 		if (other.gameObject.tag == "WayPoint") {
 			lastWayPoint = other.gameObject;
 			//			print (lastWayPoint.GetComponent<PathNode>().ReturnDistanceToEnd());
@@ -143,9 +143,7 @@ public class CarData : MonoBehaviour {
 		tempTurn = GetComponent<MotoPhysics> ().turnStrength;
 		//		explosion = Resources.Load("MikeAssets/ExplosionMaterial/ExplosionParent.prefab") as GameObject;
 	}
-
-
-
+	
 	IEnumerator Explode () 
 	{
 		isRespawning = true;
