@@ -36,6 +36,8 @@ public class CarData : MonoBehaviour {
 		myCarAnimationController = gameObject.GetComponentInChildren<CarAnimationController> ();
 		SetPlaceInRaceAsset ();
 		SetLapAsset ();
+		tempAcl = GetComponent<MotoPhysics> ().forwardThrust;
+		tempTurn = GetComponent<MotoPhysics> ().turnStrength;
 		//		lastWayPoint = PathNode.first; first cannot be isStart with the way PathNode is currently set up - we could make it this way later
 		//		StartCoroutine ("CheckRespawn");
 	}
@@ -129,14 +131,7 @@ public class CarData : MonoBehaviour {
 	public float tempAcl;
 	public float tempTurn;
 	public bool isRespawning = false;
-	
-	void Awake () {
-		//the time that the explosion lasts
-		//		explosionTime = explosion.particleSystem.duration;
-		tempAcl = GetComponent<MotoPhysics> ().forwardThrust;
-		tempTurn = GetComponent<MotoPhysics> ().turnStrength;
-	}
-	
+
 	IEnumerator Explode () 
 	{
 		isRespawning = true;
