@@ -122,8 +122,18 @@ public class GameManager : MonoBehaviour {
       setDebugVals(0);
     }else{
     }
-    Application.LoadLevel("Config");
 
+    if(configured){
+      thisInputCont = inputCont.Load(Path.Combine(Application.persistentDataPath, "configData.xml"));
+      for(int i = 0; i <8;i++){
+        inputSystem.players[i].pedalData.min = thisInputCont.savedPlayers[i].minPed;
+        inputSystem.players[i].pedalData.max = thisInputCont.savedPlayers[i].maxPed;
+        inputSystem.players[i].wheelData.min = thisInputCont.savedPlayers[i].minWheel;
+        inputSystem.players[i].wheelData.max = thisInputCont.savedPlayers[i].maxWheel;
+      }
+    }else{
+      Application.LoadLevel("Config");
+    }
 		for(int  i = 0; i < 8; i++) {
 			isPlayingTexts[i] = GameObject.Find("P" + (i+1)).GetComponent<Image>();
 			isPlayingTexts[i].gameObject.SetActive(false);
@@ -255,6 +265,7 @@ public class GameManager : MonoBehaviour {
 
       
 
+    }
 #if LOG_SERIAL
       if(showDebugStr) {
         string debugStr = "";
@@ -265,6 +276,5 @@ public class GameManager : MonoBehaviour {
         GUI.Box (new Rect (0f, 0f, 300f, 600f), debugStr, GUI.skin.box);
       }
 #endif
-    }
 	}
 }
