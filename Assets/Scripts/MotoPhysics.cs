@@ -41,12 +41,12 @@ public class MotoPhysics : MonoBehaviour {
 			if (frontHit.distance <= floatHeight && frontHit.collider.gameObject.tag != "WayPoint") {
 				thisRigidbody.AddForceAtPosition(Vector3.up * hoverForce * (1.0f - (frontHit.distance / floatHeight)), front.transform.position); //push up on the car if it is close to track
 			}
-			else {
+			else { //if not hitting
 				thisRigidbody.AddForceAtPosition(-Vector3.up * hoverForce, front.transform.position); //push down on the car if it is in the air
-//				if (transform.rotation.x >= 0) {
+//				if (transform.rotation.eulerAngles.x >= 0) {
 //					thisRigidbody.AddForceAtPosition(Vector3.up * hoverForce, front.transform.position); //fixes offset in the air
 //				}
-//				else if (transform.rotation.x <= 0) {
+//				else if (transform.rotation.eulerAngles.x <= 0) {
 //					thisRigidbody.AddForceAtPosition(Vector3.up * hoverForce, back.transform.position);
 //				}
 			}
@@ -86,8 +86,12 @@ public class MotoPhysics : MonoBehaviour {
 
 	IEnumerator SpeedBoost () {
 		float currentThrust = forwardThrust;
+<<<<<<< HEAD
 //		float startTime = Time.time;
 		forwardThrust *= 2;
+=======
+		forwardThrust *= 4;
+>>>>>>> 1d690e057de398b6f103e2499f02e084fc38a728
 
 		while (forwardThrust > currentThrust) {
 			yield return new WaitForEndOfFrame();
