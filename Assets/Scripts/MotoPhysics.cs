@@ -32,7 +32,8 @@ public class MotoPhysics : MonoBehaviour {
 	}
 
 	void FixedUpdate() {
-    Hover ();
+		if (GetComponent<CarData> ().isRespawning == false)
+			Hover ();
 	}
 
 	void Hover () {

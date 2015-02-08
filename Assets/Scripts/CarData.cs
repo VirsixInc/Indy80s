@@ -128,7 +128,7 @@ public class CarData : MonoBehaviour {
 	//	GameObject tempExplosion;
 	public float tempAcl;
 	public float tempTurn;
-	bool isRespawning = false;
+	public bool isRespawning = false;
 	
 	void Awake () {
 		//the time that the explosion lasts
@@ -144,6 +144,7 @@ public class CarData : MonoBehaviour {
 		Instantiate(explosion, transform.position+new Vector3(0,4,0), Quaternion.identity);
 		//		tempExplosion = (GameObject)Instantiate(explosion);
 		rigidbody.velocity = new Vector3(0,0,0);
+		rigidbody.isKinematic = true;
 		GetComponent<MotoPhysics> ().forwardThrust = 0;
 		GetComponent<MotoPhysics> ().turnStrength = 0;
 		foreach (MeshRenderer x in GetComponentsInChildren<MeshRenderer>())
@@ -157,6 +158,7 @@ public class CarData : MonoBehaviour {
 			x.enabled = true;
 		isRespawning = false;
 		gameObject.collider.enabled = true;
+		rigidbody.isKinematic = false;
 		yield return new WaitForSeconds (1);
 		GetComponent<MotoPhysics> ().forwardThrust = tempAcl;
 		GetComponent<MotoPhysics> ().turnStrength = tempTurn;
