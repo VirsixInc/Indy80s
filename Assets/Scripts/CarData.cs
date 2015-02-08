@@ -157,7 +157,6 @@ public class CarData : MonoBehaviour {
 			x.enabled = true;
 		isRespawning = false;
 		gameObject.collider.enabled = true;
-		rigidbody.isKinematic = false;
 		yield return new WaitForSeconds (1);
 		GetComponent<MotoPhysics> ().forwardThrust = tempAcl;
 		GetComponent<MotoPhysics> ().turnStrength = tempTurn;
