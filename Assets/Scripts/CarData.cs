@@ -160,8 +160,8 @@ public class CarData : MonoBehaviour {
 		yield return new WaitForSeconds (1);
 		//		Destroy (tempExplosion);
 		Transform spawnPosition = gameObject.GetComponent<CarData> ().lastWayPoint.transform;
-		transform.position = new Vector3 (spawnPosition.position.x, spawnPosition.position.y + 20, spawnPosition.position.z) ;
-		transform.rotation = spawnPosition.rotation;
+		transform.parent.transform.position = new Vector3 (spawnPosition.position.x, spawnPosition.position.y + 20, spawnPosition.position.z) ;
+		transform.parent.transform.rotation = spawnPosition.rotation;
 		foreach (MeshRenderer x in GetComponentsInChildren<MeshRenderer>())
 			x.enabled = true;
 		isRespawning = false;
