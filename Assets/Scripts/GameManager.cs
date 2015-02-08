@@ -131,6 +131,7 @@ public class GameManager : MonoBehaviour {
         inputSystem.players[i].wheelData.min = thisInputCont.savedPlayers[i].minWheel;
         inputSystem.players[i].wheelData.max = thisInputCont.savedPlayers[i].maxWheel;
       }
+			currentState = States.startScreen;
     }else{
       Application.LoadLevel("Config");
     }
@@ -232,6 +233,7 @@ public class GameManager : MonoBehaviour {
 				}
 				break;
 			case States.startScreen:
+				print("I'M AT START SCREEN");
 				if (pedalNormalized < .5f && playerBools [player] == false) {
 					playerBools [player] = true;
 					isPlayingTexts [player].gameObject.SetActive(true);
