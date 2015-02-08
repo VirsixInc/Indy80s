@@ -80,10 +80,10 @@ public class GameManager : MonoBehaviour {
     for(int i = 0; i<8; i++){
       inputData currInputData = new inputData();
       currInputData.id = i;
-      currInputData.minPed = inputSystem.players[i].wheelData.min;
-      currInputData.maxPed = inputSystem.players[i].wheelData.max;
-      currInputData.minWheel = inputSystem.players[i].pedalData.min;
-      currInputData.maxWheel = inputSystem.players[i].pedalData.max;
+      currInputData.minPed = inputSystem.players[i].pedalData.min;
+      currInputData.maxPed = inputSystem.players[i].pedalData.max;
+      currInputData.minWheel = inputSystem.players[i].wheelData.min;
+      currInputData.maxWheel = inputSystem.players[i].wheelData.max;
       thisInputCont.savedPlayers.Add(currInputData);
     }
    thisInputCont.Save(Path.Combine(Application.persistentDataPath, "configData.xml"));
@@ -258,7 +258,7 @@ public class GameManager : MonoBehaviour {
         debugStr += serialInfo[i] + "\n\n";
       }
       GUI.skin.box.alignment = TextAnchor.UpperLeft;
-      GUI.Box (new Rect (0f, 0f, 300f, 600f), debugStr, GUI.skin.box);
+      GUI.Box (new Rect (0f, 0f, 300f, 900f), debugStr, GUI.skin.box);
     }
 //#endif
     if(debugMode){
