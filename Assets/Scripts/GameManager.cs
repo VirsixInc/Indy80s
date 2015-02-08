@@ -196,7 +196,7 @@ public class GameManager : MonoBehaviour {
 			if (!playerBools[i]) {
 				if(PlayerManager.s_instance != null) {
 					if(PlayerManager.s_instance.cars[i] != null) {
-						PlayerManager.s_instance.cars[i].gameObject.transform.parent.gameObject.SetActive(false);
+						PlayerManager.s_instance.cars[i].gameObject.SetActive(false);
 						GameObject.Find("Place" + (i + 1)).SetActive(false);
 						GameObject.Find("LapNumber" + (i + 1)).SetActive(false);
 						GameObject.Find("Lap" + (i + 1)).SetActive(false);
