@@ -16,7 +16,8 @@ public class MotoPhysics : MonoBehaviour {
 	public float rollScalar;
 	public bool invertTurning;
 	public bool invertAcl;
-	public float speedBoostDecrement = 100f;
+	public float speedBoostDecrement = 100f, speedBoostMultiplier;
+
 
 	void Start () {
 		thisRigidbody = GetComponent<Rigidbody> ();
@@ -96,8 +97,7 @@ public class MotoPhysics : MonoBehaviour {
 	IEnumerator SpeedBoost () {
 		float currentThrust = forwardThrust;
 //		float startTime = Time.time;
-		forwardThrust *= 2;
-		forwardThrust *= 4;
+		forwardThrust *= speedBoostMultiplier;
 
 		while (forwardThrust > currentThrust) {
 			yield return new WaitForEndOfFrame();
