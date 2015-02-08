@@ -17,19 +17,13 @@ public class CarData : MonoBehaviour {
 	public float invertPedal = 0f;
 	public AudioSource engine;
 	public float enginePitchRatio = .01f;
-	float tempThrust;
-	float tempTurnStrength;
 
 	MotoPhysics myHoverCarControl;
 	CarAnimationController myCarAnimationController;
 	
 	public float distanceFromLastWayPoint;
-
-  public GameObject explodeFab;
-
+	
 	void Start() {
-		tempThrust = GetComponent<MotoPhysics> ().forwardThrust;
-		tempTurnStrength = GetComponent<MotoPhysics> ().turnStrength;
 		engine = GameObject.Find ("CarRaceSound" + id.ToString ()).GetComponent<AudioSource>();
 		placeInRaceHolder = GameObject.Find ("Place" + id.ToString ()).GetComponent<Image>();
 		if (placeInRaceHolder == null || placeInRaceHolder.sprite == null) {
@@ -141,7 +135,6 @@ public class CarData : MonoBehaviour {
 		//		explosionTime = explosion.particleSystem.duration;
 		tempAcl = GetComponent<MotoPhysics> ().forwardThrust;
 		tempTurn = GetComponent<MotoPhysics> ().turnStrength;
-		//		explosion = Resources.Load("MikeAssets/ExplosionMaterial/ExplosionParent.prefab") as GameObject;
 	}
 	
 	IEnumerator Explode () 
