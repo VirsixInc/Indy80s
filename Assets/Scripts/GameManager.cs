@@ -251,6 +251,16 @@ public class GameManager : MonoBehaviour {
 	}
 
 	void OnGUI() {
+//#if LOG_SERIAL
+    if(showDebugStr) {
+      string debugStr = "";
+      for(int i = 0; i < InputSystem.NUM_PLAYERS; i++) {
+        debugStr += serialInfo[i] + "\n\n";
+      }
+      GUI.skin.box.alignment = TextAnchor.UpperLeft;
+      GUI.Box (new Rect (0f, 0f, 300f, 600f), debugStr, GUI.skin.box);
+    }
+//#endif
     if(debugMode){
       pedTestInput = (int)(GUI.HorizontalSlider(new Rect(50, 50, 100, 30), pedTestInput, 0, 500));
       rotTestInput = (int)(GUI.HorizontalSlider(new Rect(50, 25, 100, 30), rotTestInput, 0, 500));
@@ -260,21 +270,7 @@ public class GameManager : MonoBehaviour {
       testArr[1] = pedTestInput;
       testArr[2] = 0;
       testArr[3] = 0; // defines as debug
-
       SerialInputRecieved(testArr);
-
-      
-
     }
-#if LOG_SERIAL
-      if(showDebugStr) {
-        string debugStr = "";
-        for(int i = 0; i < InputSystem.NUM_PLAYERS; i++) {
-          debugStr += serialInfo[i] + "\n\n";
-        }
-        GUI.skin.box.alignment = TextAnchor.UpperLeft;
-        GUI.Box (new Rect (0f, 0f, 300f, 600f), debugStr, GUI.skin.box);
-      }
-#endif
 	}
 }
