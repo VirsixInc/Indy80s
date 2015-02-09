@@ -64,7 +64,7 @@ public class PlayerManager : MonoBehaviour {
 		
 		//sort cars by all metrics
 		List<CarData> sortCarList = new List<CarData>();
-		foreach (CarData car in sortCarList) {
+		foreach (CarData car in PlayerManager.s_instance.cars) {
 			if (sortCarList.Count == 0) //if this car is playing, put him in the sort list
 				sortCarList.Insert(0, car);
 			else if (sortCarList.Count > 0 && sortCarList[0].ReturnLastWayPoint()!=null) { //if this car is playing, put him in the sort list, not sure why returnlastwaypoint is there
