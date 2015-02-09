@@ -64,11 +64,10 @@ public class PlayerManager : MonoBehaviour {
 		
 		//sort cars by all metrics
 		List<CarData> sortCarList = new List<CarData>();
-		for (int j = 0; j < cars.Length; j++) {
-			CarData car = cars[j];
-			if (sortCarList.Count == 0 && GameManager.s_instance.playerBools[j]) //if this car is playing, put him in the sort list
+		foreach (CarData car in sortCarList) {
+			if (sortCarList.Count == 0) //if this car is playing, put him in the sort list
 				sortCarList.Insert(0, car);
-			else if (sortCarList.Count > 0 && sortCarList[0].ReturnLastWayPoint()!=null && GameManager.s_instance.playerBools[j]) { //if this car is playing, put him in the sort list, not sure why returnlastwaypoint is there
+			else if (sortCarList.Count > 0 && sortCarList[0].ReturnLastWayPoint()!=null) { //if this car is playing, put him in the sort list, not sure why returnlastwaypoint is there
 				for (int i = 0; i < sortCarList.Count; i++) {
 					//if car greater lap than position i, insert at i
 					if (car.lap > sortCarList[i].lap) { 
