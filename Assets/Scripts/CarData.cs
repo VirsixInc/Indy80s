@@ -49,7 +49,7 @@ public class CarData : MonoBehaviour {
 	//SetCarCurrentPlace, called from PlayerManager
 	public void SetCarCurrentPlace(int newCurrentPlace) {
 		currentPlace = newCurrentPlace;
-//		SetPlaceInRaceAsset ();
+		SetPlaceInRaceAsset ();
 	}
 	
 	public void SetLastWayPoint(GameObject newPathNode) {
