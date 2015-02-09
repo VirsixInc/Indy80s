@@ -8,7 +8,7 @@ public class MotoPhysics : MonoBehaviour {
 	public float hoverForce;
 	public RaycastHit frontHit, backHit; //overwritten every frame
 	public float forwardThrust;
-	public const float initThrust = 15000;
+	public const float initThrust = 10000;
 	public const float initTurnStrength = 3000;
 	public float turnStrength;
 	public float aclAxis;

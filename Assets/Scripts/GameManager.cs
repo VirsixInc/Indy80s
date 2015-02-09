@@ -181,7 +181,7 @@ public class GameManager : MonoBehaviour {
 	
 	IEnumerator CountDown() {
 		while (counter > 0) {
-			yield return new WaitForSeconds(1);
+			yield return new WaitForSeconds(.65f);
 			counter--;
 			counterText.text = counter.ToString();
 			beep.Play();
