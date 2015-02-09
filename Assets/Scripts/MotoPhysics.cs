@@ -18,7 +18,7 @@ public class MotoPhysics : MonoBehaviour {
 	public float rollScalar;
 	public bool invertTurning;
 	public bool invertAcl;
-	float speedBoostDecrement = 100f, speedBoostMultiplier = 1.5f;
+	float speedBoostDecrement = 100f, speedBoostMultiplier = 2f;
 
 
 	void Start () {

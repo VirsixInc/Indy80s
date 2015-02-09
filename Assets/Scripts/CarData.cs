@@ -79,7 +79,7 @@ public class CarData : MonoBehaviour {
 						myHoverCarControl.turnAxis = newWheelIntensity;
 						myHoverCarControl.aclAxis = (1 - newPedalIntensity + invertPedal);
 						myCarAnimationController.wheelRotation = isInverted * newWheelIntensity;
-						myCarAnimationController.pedalValue = (1 - newPedalIntensity + invertPedal);
+						myCarAnimationController.pedalValue = (1 - newPedalIntensity);
 						PitchShift (newPedalIntensity);
 				}
 		}
