@@ -36,8 +36,6 @@ public class CarData : MonoBehaviour {
 		myCarAnimationController = gameObject.GetComponentInChildren<CarAnimationController> ();
 		SetPlaceInRaceAsset ();
 		SetLapAsset ();
-		tempAcl = GetComponent<MotoPhysics> ().forwardThrust;
-		tempTurn = GetComponent<MotoPhysics> ().turnStrength;
 		//		lastWayPoint = PathNode.first; first cannot be isStart with the way PathNode is currently set up - we could make it this way later
 		//		StartCoroutine ("CheckRespawn");
 	}
@@ -128,8 +126,6 @@ public class CarData : MonoBehaviour {
 	public GameObject explosion;
 	public Transform spawnPosition;
 	//	GameObject tempExplosion;
-	public float tempAcl;
-	public float tempTurn;
 	public bool isRespawning = false;
 
 	IEnumerator Explode () 
@@ -153,8 +149,8 @@ public class CarData : MonoBehaviour {
 		isRespawning = false;
 		gameObject.collider.enabled = true;
 		yield return new WaitForSeconds (1);
-		GetComponent<MotoPhysics> ().forwardThrust = tempAcl;
-		GetComponent<MotoPhysics> ().turnStrength = tempTurn;
+		GetComponent<MotoPhysics> ().forwardThrust = MotoPhysics.initThrust;
+		GetComponent<MotoPhysics> ().turnStrength = MotoPhysics.initTurnStrength;
 	}
 	
 	public void TriggerExplode(){

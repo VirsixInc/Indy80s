@@ -8,6 +8,8 @@ public class MotoPhysics : MonoBehaviour {
 	public float hoverForce;
 	public RaycastHit frontHit, backHit; //overwritten every frame
 	public float forwardThrust;
+	public const float initThrust = 15000;
+	public const float initTurnStrength = 2500;
 	public float turnStrength;
 	public float aclAxis;
 	public float turnAxis;
@@ -20,6 +22,8 @@ public class MotoPhysics : MonoBehaviour {
 
 
 	void Start () {
+		forwardThrust = initThrust;
+		turnStrength = initTurnStrength;
 		thisRigidbody = GetComponent<Rigidbody> ();
 		if (invertTurning) GetComponent<CarData> ().isInverted = -1;
 		if (invertTurning)
