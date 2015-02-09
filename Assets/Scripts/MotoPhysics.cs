@@ -74,7 +74,7 @@ public class MotoPhysics : MonoBehaviour {
 	}
 
 	void ForwardThrust(){
-		thisRigidbody.AddForce(transform.forward * forwardThrust * aclAxis);
+		thisRigidbody.AddForce(new Vector3(transform.forward.x, 0f, transform.forward.z) * forwardThrust * aclAxis);
 	}
 
 	void Turning(){
