@@ -9,7 +9,7 @@ public class MotoPhysics : MonoBehaviour {
 	public RaycastHit frontHit, backHit; //overwritten every frame
 	public float forwardThrust;
 	public const float initThrust = 15000;
-	public const float initTurnStrength = 2500;
+	public const float initTurnStrength = 3000;
 	public float turnStrength;
 	public float aclAxis;
 	public float turnAxis;
@@ -18,7 +18,7 @@ public class MotoPhysics : MonoBehaviour {
 	public float rollScalar;
 	public bool invertTurning;
 	public bool invertAcl;
-	public float speedBoostDecrement = 100f, speedBoostMultiplier = 2;
+	float speedBoostDecrement = 100f, speedBoostMultiplier = 1.5f;
 
 
 	void Start () {
