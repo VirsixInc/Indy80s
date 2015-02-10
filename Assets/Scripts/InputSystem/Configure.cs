@@ -8,9 +8,7 @@ public class Configure : MonoBehaviour {
 
 	InputSystem.PlayerInput.Type currentType = InputSystem.PlayerInput.Type.Pedal;
 	bool logMinimum = true;
-
-//	float timer = 0f;
-
+	
 	public float waitTime = 3f;
 
 	InputSystem inputSystem;
@@ -28,10 +26,6 @@ public class Configure : MonoBehaviour {
 	}
 	
 	void Update () {
-//		timer += Time.deltaTime;
-
-//		if (timer > waitTime) {
-//			timer = 0f;
 		if(Input.GetKey(KeyCode.Space)) {
 			if(currentType == InputSystem.PlayerInput.Type.Pedal) {
 				if(logMinimum) {
@@ -65,7 +59,6 @@ public class Configure : MonoBehaviour {
 					currentPlayer++;
 					if(currentPlayer > InputSystem.NUM_PLAYERS - 1) {
 						Application.LoadLevel("Intro");
-						//						inputSystem.state = InputSystem.State.Normal;
 						enabled = false;
 						return;
 					}

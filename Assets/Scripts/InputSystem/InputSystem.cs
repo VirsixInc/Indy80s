@@ -1,11 +1,28 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Xml;
+using System.Xml.Serialization;
+using System.IO;
 
 public class InputSystem : MonoBehaviour {
-	
+
 	public const int NUM_PLAYERS = 8;
+
+	[XmlRoot("PlayerData")]
+	public class PlayerData : XMLBase {
+		public PlayerInput[] players;
+
+		protected override void Init() {
+			players = new PlayerInput[NUM_PLAYERS];
+			
+			for (int i = 0; i < NUM_PLAYERS; i++) {
+				players[i] = new PlayerInput();
+			}
+		}
+	}
 	
+	//[XmlRoot("PlayerInput")]
 	public class PlayerInput {
 		public enum Type {
 			Wheel, Pedal
@@ -36,9 +53,11 @@ public class InputSystem : MonoBehaviour {
 			}
 		}
 	}
-	
+
+	//[XmlRoot("InputData")]
 	public class InputData {
 		public float min, max;
+		[XmlIgnore]
 		public Queue<float> values;
 		
 		public float GetRunningAverage() {
@@ -69,28 +88,19 @@ public class InputSystem : MonoBehaviour {
 		}
 	}
 	
-//	public enum State {
-//		Configure, Normal
-//	}
-//	
-//	public State state = State.Normal;
-	
-	public PlayerInput[] players;
+//	[System.NonSerialized]
+	PlayerData playerData;
 
 	public static InputSystem s_instance;
 
 	void Awake () {
 		if(s_instance == null) {
 			s_instance = this;
+			playerData = PlayerData.Load<PlayerData>();
 		} else {
-			enabled = false;
+			Destroy(this);
+//			enabled = false;
 			return;
-//			Destroy(gameObject);
-		}
-		players = new PlayerInput[NUM_PLAYERS];
-		
-		for (int i = 0; i < NUM_PLAYERS; i++) {
-			players[i] = new PlayerInput();
 		}
 	}
 
@@ -107,13 +117,14 @@ public class InputSystem : MonoBehaviour {
 			float average = players[player].pedal.GetRunningAverage();
 			if(average < players[player].pedal.min)
 				players[player].pedal.min = average;
-			print ("player " + player + type.ToString() + " " + players[player].pedal.min);
+//			print ("player " + player + type.ToString() + " " + players[player].pedal.min);
 		} else if (type == PlayerInput.Type.Wheel) {
 			float average = players[player].wheel.GetRunningAverage();
 			if(average < players[player].wheel.min)
 				players[player].wheel.min = average;
-			print ("player " + player + type.ToString() + " " + players[player].wheel.min);
+//			print ("player " + player + type.ToString() + " " + players[player].wheel.min);
 		}
+		playerData.Save();
 	}
 
 	public void LogMaximum(int player, InputSystem.PlayerInput.Type type) {
@@ -127,6 +138,13 @@ public class InputSystem : MonoBehaviour {
 			if(average > players[player].wheel.max)
 				players[player].wheel.max = average;
 			print ("player " + player + type.ToString() + " " + players[player].wheel.max);
+		}
+		playerData.Save();
+	}
+
+	public PlayerInput[] players {
+		get {
+			return playerData.players;
 		}
 	}
 }
