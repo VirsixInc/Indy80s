@@ -20,14 +20,16 @@ public class MotoPhysics : MonoBehaviour {
 	public bool invertAcl;
 	float speedBoostDecrement = 100f, speedBoostMultiplier = 2f;
 
+	[HideInInspector]
+	public bool canMove = false;
 
 	void Start () {
 		forwardThrust = initThrust;
 		turnStrength = initTurnStrength;
 		thisRigidbody = GetComponent<Rigidbody> ();
-		if (invertTurning) GetComponent<CarData> ().isInverted = -1;
-		if (invertTurning)
-						GetComponent<CarData> ().invertPedal = 1f;
+//		if (invertTurning) GetComponent<CarData> ().isInverted = -1;
+//		if (invertTurning)
+//						GetComponent<CarData> ().invertPedal = 1f;
 	}
 	
 	void Update () {
@@ -36,12 +38,11 @@ public class MotoPhysics : MonoBehaviour {
 	}
 
 	void FixedUpdate() {
-		if (GetComponent<CarData> ().isRespawning == false)
-			Hover ();
+		if (canMove)
+			Hover();
 	}
 
 	void Hover () {
-
 		//if the front thruster, ray from position    , in direction, output data to, length of raycast, is hitting
 		if (Physics.Raycast (front.transform.position, -Vector3.up, out frontHit, 1000f)) { //FRONT
 			if (frontHit.distance <= floatHeight) {
@@ -97,6 +98,11 @@ public class MotoPhysics : MonoBehaviour {
 		else if (transform.rotation.z < 0) {
 			thisRigidbody.AddRelativeTorque(Vector3.forward * transform.rotation.z * rollScalar);		
 		}
+	}
+
+	public void Reset() {
+		forwardThrust = MotoPhysics.initThrust;
+		turnStrength = MotoPhysics.initTurnStrength;
 	}
 
 	IEnumerator SpeedBoost () {

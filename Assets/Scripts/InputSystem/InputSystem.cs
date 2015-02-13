@@ -21,8 +21,7 @@ public class InputSystem : MonoBehaviour {
 			}
 		}
 	}
-	
-	//[XmlRoot("PlayerInput")]
+
 	public class PlayerInput {
 		public enum Type {
 			Wheel, Pedal
@@ -53,8 +52,7 @@ public class InputSystem : MonoBehaviour {
 			}
 		}
 	}
-
-	//[XmlRoot("InputData")]
+	
 	public class InputData {
 		public float min, max;
 		[XmlIgnore]
@@ -87,8 +85,7 @@ public class InputSystem : MonoBehaviour {
 			values.Enqueue(value);
 		}
 	}
-	
-//	[System.NonSerialized]
+
 	PlayerData playerData;
 
 	public static InputSystem s_instance;

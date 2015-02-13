@@ -1,5 +1,4 @@
 ﻿#define LOG_SERIAL
-
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,7 +10,9 @@ using System.Xml;
 using System.Xml.Serialization;
 using System.IO;
 
-public enum States {startScreen, levelSelect, playing, config};
+public enum State {
+	Intro, LevelSelect, Main, Config 
+};
 
 //[XmlRoot("inputContainer")]
 //public class inputCont {
@@ -51,25 +52,22 @@ public enum States {startScreen, levelSelect, playing, config};
 
 public class GameManager : MonoBehaviour {
 
-  public bool debugMode;
+	public bool debugMode;
 #if LOG_SERIAL
 	public bool showDebugStr = true;
 	string[] serialInfo = new string[8];
 #endif
 	public bool configured;
 	public TextAsset inputConfiguration;
-
 	public static GameManager s_instance;
-	public static States currentState = States.config;
+	public static State currentState = State.Config;
 	public bool[] playerBools = {false,false,false,false,false,false,false,false};
 	public int counter = 10;
 	bool isCountingDown = false;
 	public Image[] isPlayingTexts;
 	public Text counterText;
 	public bool canControlCars = true;
-
 	public AudioSource joinUpSound, beep;
-
 	InputSystem inputSystem;
 //	inputCont thisInputCont;
 
@@ -92,23 +90,23 @@ public class GameManager : MonoBehaviour {
 //  print("SAVED XML");
 //  }
 
-	void OnLevelWasLoaded(int level){
+	void OnLevelWasLoaded(int level) {
 		if (level == 0) {
-			for(int  i = 0; i < 8; i++) {
-				isPlayingTexts[i] = GameObject.Find("P" + (i+1)).GetComponent<Image>();
-				isPlayingTexts[i].gameObject.SetActive(false);
+			for (int  i = 0; i < 8; i++) {
+				isPlayingTexts [i] = GameObject.Find("P" + (i + 1)).GetComponent<Image>();
+				isPlayingTexts [i].gameObject.SetActive(false);
 			}
 			if (counterText == null)
 				counterText = GameObject.Find("Timer").GetComponent<Text>();
-			if(joinUpSound == null)
+			if (joinUpSound == null)
 				joinUpSound = GameObject.Find("JoinUp").GetComponent<AudioSource>();
-			if(beep == null)
+			if (beep == null)
 				beep = GameObject.Find("Beep").GetComponent<AudioSource>();
-			currentState = States.startScreen;
+			currentState = State.Intro;
 		}
 	}
 
-	void Awake(){
+	void Awake() {
 		if (s_instance == null) {
 			s_instance = this;
 			DontDestroyOnLoad(gameObject);
@@ -137,9 +135,9 @@ public class GameManager : MonoBehaviour {
 //    } else {
 //    	Application.LoadLevel("Config");
 //    }
-		for(int  i = 0; i < 8; i++) {
-			isPlayingTexts[i] = GameObject.Find("P" + (i+1)).GetComponent<Image>();
-			isPlayingTexts[i].gameObject.SetActive(false);
+		for (int  i = 0; i < 8; i++) {
+			isPlayingTexts [i] = GameObject.Find("P" + (i + 1)).GetComponent<Image>();
+			isPlayingTexts [i].gameObject.SetActive(false);
 		}
 		if (counterText == null)
 			counterText = GameObject.Find("Timer").GetComponent<Text>();
@@ -153,18 +151,15 @@ public class GameManager : MonoBehaviour {
 //  }
 #if LOG_SERIAL
 	void Update() {
-		if(Input.GetKeyDown(KeyCode.Q)) {
+		if (Input.GetKeyDown(KeyCode.Q)) {
 			showDebugStr = !showDebugStr;
 		}
-//		if(Input.GetKeyDown(KeyCode.W)) {
-//      saveAllVals();
-//    }
 
 		if (Input.GetKeyDown(KeyCode.S)) {
-			if(Application.loadedLevelName == "Config") {
+			if (Application.loadedLevelName == "Config") {
 				Application.LoadLevel("Intro");
 			} else {
-				for(int i = 0; i < InputSystem.NUM_PLAYERS; i++) {
+				for (int i = 0; i < InputSystem.NUM_PLAYERS; i++) {
 					playerBools [i] = true;
 					isPlayingTexts [i].gameObject.SetActive(true);
 					if (!isCountingDown) {
@@ -188,30 +183,31 @@ public class GameManager : MonoBehaviour {
 			counterText.text = counter.ToString();
 			beep.Play();
 		}
-		Application.LoadLevel (1);
-		currentState = States.playing;
+		Application.LoadLevel(1);
+		currentState = State.Main;
 	}
 
-
-	public void HideIdleCars() {
-		for (int i =0; i < PlayerManager.s_instance.cars.Length; i++) {
-			if (!playerBools[i]) {
-				if(PlayerManager.s_instance != null) {
-					if(PlayerManager.s_instance.cars[i] != null) {
-						PlayerManager.s_instance.cars[i].gameObject.SetActive(false);
-						GameObject.Find("Place" + (i + 1)).SetActive(false);
-						GameObject.Find("LapNumber" + (i + 1)).SetActive(false);
-						GameObject.Find("Lap" + (i + 1)).SetActive(false);
-					}
-				}
-			}
-		}
-	}
+	//FIXME
+//	public void HideIdleCars() {
+//		for (int i =0; i < PlayerManager.s_instance.cars.Length; i++) {
+//			if (!playerBools[i]) {
+//				if(PlayerManager.s_instance != null) {
+//					if(PlayerManager.s_instance.cars[i] != null) {
+//						PlayerManager.s_instance.cars[i].gameObject.SetActive(false);
+//						GameObject.Find("Place" + (i + 1)).SetActive(false);
+//						GameObject.Find("LapNumber" + (i + 1)).SetActive(false);
+//						GameObject.Find("Lap" + (i + 1)).SetActive(false);
+//					}
+//				}
+//			}
+//		}
+//	}
 
 	public void SerialInputRecieved(int[] message) {  
-    if(debugMode && message.Length != 4){
-      return;
-    }
+		if (debugMode && message.Length != 4) {
+			return;
+		}
+
 		float wheelIntensity = (float)message [0];
 		float pedalIntensity = (float)message [1];
 		int player = (int)message [2];
@@ -222,19 +218,19 @@ public class GameManager : MonoBehaviour {
 		float pedalNormalized = inputSystem.players [player].pedal.GetRunningAverageNormalized();
 		float wheelNormalized = -(inputSystem.players [player].wheel.GetRunningAverageNormalized() * 2f - 1f);
 #if LOG_SERIAL
-		serialInfo[player] = "Player " + player + "\n" + 
-			"  Pedal: \n" +
-				"    Norm: " + pedalNormalized.ToString("F2") + " Cur: " + pedalIntensity + " Min: " + inputSystem.players[player].pedal.min + " Max: " + inputSystem.players[player].pedal.max + 
-			"\n  Wheel: \n" +
-				"    Norm: " + wheelNormalized.ToString("F2") + " Cur: " + wheelIntensity + " Min: " + inputSystem.players[player].wheel.min + " Max: " + inputSystem.players[player].wheel.max;
+		serialInfo [player] = "Player " + player + "\n"
+			+ "  Pedal: \n"
+			+ "    Norm: " + pedalNormalized.ToString("F2") + " Cur: " + pedalIntensity + " Min: " + inputSystem.players [player].pedal.min + " Max: " + inputSystem.players [player].pedal.max
+			+ "\n  Wheel: \n"
+			+ "    Norm: " + wheelNormalized.ToString("F2") + " Cur: " + wheelIntensity + " Min: " + inputSystem.players [player].wheel.min + " Max: " + inputSystem.players [player].wheel.max;
 #endif
 		switch (currentState) {
-			case States.playing:
+			case State.Main:
 				if (canControlCars) {
 					PlayerManager.s_instance.SendOSCDataToCar(player, pedalNormalized, wheelNormalized);
 				}
 				break;
-			case States.startScreen:
+			case State.Intro:
 				print("I'M AT START SCREEN");
 				if (pedalNormalized < .5f && playerBools [player] == false) {
 					playerBools [player] = true;
@@ -249,21 +245,21 @@ public class GameManager : MonoBehaviour {
 					}
 				}
 				break;
-			case States.config:
+			case State.Config:
 				break;
 		}
 	}
 
 	void OnGUI() {
 //#if LOG_SERIAL
-    if(showDebugStr) {
-      string debugStr = "";
-      for(int i = 0; i < InputSystem.NUM_PLAYERS; i++) {
-        debugStr += serialInfo[i] + "\n\n";
-      }
-      GUI.skin.box.alignment = TextAnchor.UpperLeft;
-      GUI.Box (new Rect (0f, 0f, 300f, 900f), debugStr, GUI.skin.box);
-    }
+		if (showDebugStr) {
+			string debugStr = "";
+			for (int i = 0; i < InputSystem.NUM_PLAYERS; i++) {
+				debugStr += serialInfo [i] + "\n\n";
+			}
+			GUI.skin.box.alignment = TextAnchor.UpperLeft;
+			GUI.Box(new Rect(0f, 0f, 300f, 900f), debugStr, GUI.skin.box);
+		}
 //#endif
 //    if(debugMode){
 //      pedTestInput = (int)(GUI.HorizontalSlider(new Rect(50, 50, 100, 30), pedTestInput, 0, 500));
