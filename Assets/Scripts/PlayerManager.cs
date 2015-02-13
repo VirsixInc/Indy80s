@@ -14,6 +14,7 @@ public class PlayerManager : MonoBehaviour {
 
 	[System.NonSerialized]
 	public List<CarData> cars;
+	public Dictionary<int, int> idToList; // Eh, efficient but not clean... //FIXME MAYBE?
 	public List<GameObject> carPrefabs;
 	public Transform carSpawnSpots;
 
@@ -30,6 +31,7 @@ public class PlayerManager : MonoBehaviour {
 	void Awake() {
 		s_instance = this;
 		cars = new List<CarData>();
+		idToList = new Dictionary<int, int>();
 	}
 
 	void Start() {
@@ -40,9 +42,10 @@ public class PlayerManager : MonoBehaviour {
 		UpdatePlaces ();
 	}
 
-	void Addplayer(int player) {
+	public void Addplayer(int player) {
 		cars.Add(((GameObject)GameObject.Instantiate(carPrefabs [player], carSpawnSpots.GetChild(player).position, carSpawnSpots.GetChild(player).rotation)).GetComponent<CarData>());
-		cars [player].playerNumber = player;
+		cars[cars.Count - 1].playerNumber = player;
+		idToList.Add(player, cars.Count - 1);
 	}
 
 	//FIXME 
@@ -138,6 +141,11 @@ public class PlayerManager : MonoBehaviour {
 
 	//part of dec 31st version of PLAYERMANAGER
 	public void SendOSCDataToCar(int playerID, float pedalIntensity, float wheelIntensity) {
-		cars [playerID].UpdateInput(pedalIntensity, wheelIntensity);
+		if (idToList.ContainsKey(playerID)) {
+			int index = idToList [playerID];
+			cars [index].UpdateInput(pedalIntensity, wheelIntensity);
+		} else {
+			print(playerID + " not in dict");
+		}
 	}
 }

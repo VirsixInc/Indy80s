@@ -26,6 +26,55 @@ public class XMLBase : System.Object {
 		}
 	}
 	
+	public static T Load<T>(ref bool loaded) where T : XMLBase, new() {
+		path = typeof(T).ToString() + ".xml";
+		
+		var serializer = new XmlSerializer(typeof(T));
+		if(!File.Exists(path)) {
+			loaded = false;
+			Debug.Log("\"" + path + "\" not found. Creating \"" + path + "\"");
+			
+			object parsedValue = default(T);
+			try
+			{
+				parsedValue = Convert.ChangeType(new T(), typeof(T));
+			}
+			catch (InvalidCastException)
+			{
+				parsedValue = null;
+				Debug.Log("Can't cast");
+			}
+			catch (ArgumentException)
+			{
+				parsedValue = null;
+			}
+			
+			((T)parsedValue).Init();
+			
+			return (T)parsedValue;
+			
+		} else {
+			loaded = true;
+			using(var stream = new FileStream(path, FileMode.Open))
+			{
+				object parsedValue = default(T);
+				try
+				{
+					parsedValue = Convert.ChangeType(serializer.Deserialize(stream), typeof(T));
+				}
+				catch (InvalidCastException)
+				{
+					parsedValue = null;
+				}
+				catch (ArgumentException)
+				{
+					parsedValue = null;
+				}
+				return (T)parsedValue;
+			}
+		}
+	}
+
 	public static T Load<T>() where T : XMLBase, new() {
 		path = typeof(T).ToString() + ".xml";
 		

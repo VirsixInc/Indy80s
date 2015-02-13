@@ -21,7 +21,7 @@ public class MotoPhysics : MonoBehaviour {
 	float speedBoostDecrement = 100f, speedBoostMultiplier = 2f;
 
 	[HideInInspector]
-	public bool canMove = false;
+	public bool canMove = true;
 
 	void Start () {
 		forwardThrust = initThrust;
@@ -30,11 +30,16 @@ public class MotoPhysics : MonoBehaviour {
 //		if (invertTurning) GetComponent<CarData> ().isInverted = -1;
 //		if (invertTurning)
 //						GetComponent<CarData> ().invertPedal = 1f;
+		canMove = true;
 	}
 	
 	void Update () {
-		ForwardThrust ();
-		Turning ();
+		if (canMove) {
+			ForwardThrust();
+			Turning();
+		} else {
+			print("cant move");
+		}
 	}
 
 	void FixedUpdate() {
@@ -43,7 +48,7 @@ public class MotoPhysics : MonoBehaviour {
 	}
 
 	void Hover () {
-		//if the front thruster, ray from position    , in direction, output data to, length of raycast, is hitting
+		//if the front thruster, ray from position   , in direction, output data to, length of raycast, is hitting
 		if (Physics.Raycast (front.transform.position, -Vector3.up, out frontHit, 1000f)) { //FRONT
 			if (frontHit.distance <= floatHeight) {
 				thisRigidbody.AddForceAtPosition(Vector3.up * hoverForce * (1.0f - (frontHit.distance / floatHeight)), front.transform.position); //push up on the car if it is close to track
@@ -100,10 +105,14 @@ public class MotoPhysics : MonoBehaviour {
 		}
 	}
 
-	public void Reset() {
-		forwardThrust = MotoPhysics.initThrust;
-		turnStrength = MotoPhysics.initTurnStrength;
+	void OnTriggerEnter(Collider other) {
+		SendMessageUpwards("GhettoTriggerEnter", other);
 	}
+
+//	public void Reset() {
+//		forwardThrust = MotoPhysics.initThrust;
+//		turnStrength = MotoPhysics.initTurnStrength;
+//	}
 
 	IEnumerator SpeedBoost () {
 		float currentThrust = forwardThrust;

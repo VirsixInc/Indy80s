@@ -14,10 +14,12 @@ public class InputSystem : MonoBehaviour {
 		public PlayerInput[] players;
 
 		protected override void Init() {
-			players = new PlayerInput[NUM_PLAYERS];
+			if (players == null) {
+				players = new PlayerInput[NUM_PLAYERS];
 			
-			for (int i = 0; i < NUM_PLAYERS; i++) {
-				players[i] = new PlayerInput();
+				for (int i = 0; i < NUM_PLAYERS; i++) {
+					players [i] = new PlayerInput();
+				}
 			}
 		}
 	}
@@ -29,15 +31,17 @@ public class InputSystem : MonoBehaviour {
 		
 		public InputData wheelData, pedalData;
 		public PlayerInput() {
-			wheelData = new InputData();
-			wheelData.min = 9999f;
-			wheelData.max = -9999f;
-			wheelData.values = new Queue<float>();
+			if(wheelData == null) {
+				wheelData = new InputData();
+				wheelData.min = 9999f;
+				wheelData.max = -9999f;
+			}
 
-			pedalData = new InputData();
-			pedalData.min = 9999f;
-			pedalData.max = -9999f;
-			pedalData.values = new Queue<float>();
+			if(pedalData == null) {
+				pedalData = new InputData();
+				pedalData.min = 9999f;
+				pedalData.max = -9999f;
+			}
 		}
 		
 		public InputData wheel {
@@ -57,7 +61,11 @@ public class InputSystem : MonoBehaviour {
 		public float min, max;
 		[XmlIgnore]
 		public Queue<float> values;
-		
+
+		public InputData() {
+			values = new Queue<float>();
+		}
+
 		public float GetRunningAverage() {
 			float average = 0f;
 			if (values.Count == 0)
@@ -90,10 +98,15 @@ public class InputSystem : MonoBehaviour {
 
 	public static InputSystem s_instance;
 
+	[HideInInspector]
+	public bool inputLoaded;
+
+	bool m_inputAvailable; // Go away Hungary. I'll fix you later
+
 	void Awake () {
 		if(s_instance == null) {
 			s_instance = this;
-			playerData = PlayerData.Load<PlayerData>();
+			playerData = PlayerData.Load<PlayerData>(ref inputLoaded);
 		} else {
 			Destroy(this);
 //			enabled = false;
@@ -107,6 +120,11 @@ public class InputSystem : MonoBehaviour {
 		} else if (type == PlayerInput.Type.Wheel) {
 			players[player].wheel.AddValue(value);
 		}
+
+		if (!m_inputAvailable) {
+			if(players[player].pedal.values.Count > 10)
+				m_inputAvailable = true;
+		}
 	}
 
 	public void LogMinimum(int player, InputSystem.PlayerInput.Type type) {
@@ -114,12 +132,10 @@ public class InputSystem : MonoBehaviour {
 			float average = players[player].pedal.GetRunningAverage();
 			if(average < players[player].pedal.min)
 				players[player].pedal.min = average;
-//			print ("player " + player + type.ToString() + " " + players[player].pedal.min);
 		} else if (type == PlayerInput.Type.Wheel) {
 			float average = players[player].wheel.GetRunningAverage();
 			if(average < players[player].wheel.min)
 				players[player].wheel.min = average;
-//			print ("player " + player + type.ToString() + " " + players[player].wheel.min);
 		}
 		playerData.Save();
 	}
@@ -129,12 +145,10 @@ public class InputSystem : MonoBehaviour {
 			float average = players[player].pedal.GetRunningAverage();
 			if(average > players[player].pedal.max)
 				players[player].pedal.max = average;
-			print ("player " + player + type.ToString() + " " + players[player].pedal.max);
 		} else if (type == PlayerInput.Type.Wheel) {
 			float average = players[player].wheel.GetRunningAverage();
 			if(average > players[player].wheel.max)
 				players[player].wheel.max = average;
-			print ("player " + player + type.ToString() + " " + players[player].wheel.max);
 		}
 		playerData.Save();
 	}
@@ -142,6 +156,12 @@ public class InputSystem : MonoBehaviour {
 	public PlayerInput[] players {
 		get {
 			return playerData.players;
+		}
+	}
+
+	public bool inputAvailable {
+		get {
+			return m_inputAvailable;
 		}
 	}
 }

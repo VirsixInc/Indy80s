@@ -6,17 +6,21 @@ public class HoverFollowCam : MonoBehaviour {
 //  float m_camDist;
 	public GameObject m_player;
 	int m_layerMask;
-	public GameObject lookDir;
-	public GameObject lookDir2;
-	[System.NonSerialized]
+//	public GameObject lookDir;
+//	public GameObject lookDir2;
+
 	public Vector3 offset;
 
 	[HideInInspector]
 	public bool flipCam; // Set in PlayerGUI
 
+	Vector3 upDirection;
+
 	void Start() {
 		m_layerMask = 1 << LayerMask.NameToLayer("Characters");
 		m_layerMask = ~m_layerMask;
+
+		upDirection = flipCam ? -transform.up : transform.up;
 	}
 	
 	void Update() {	
@@ -46,7 +50,7 @@ public class HoverFollowCam : MonoBehaviour {
 //    {
 //      transform.position = m_player.transform.position + camOffset;
 //    }
-		transform.LookAt(m_player.transform.position, flipCam ? -transform.up : transform.up);
+		transform.LookAt(m_player.transform.position, upDirection);
 
 	}
 

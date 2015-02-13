@@ -58,10 +58,10 @@ public class GameManager : MonoBehaviour {
 	string[] serialInfo = new string[8];
 #endif
 	public bool configured;
-	public TextAsset inputConfiguration;
+//	public TextAsset inputConfiguration;
 	public static GameManager s_instance;
-	public static State currentState = State.Config;
-	public bool[] playerBools = {false,false,false,false,false,false,false,false};
+	public static State currentState = State.Intro;
+	public bool[] playersJoined = {false,false,false,false,false,false,false,false};
 	public int counter = 10;
 	bool isCountingDown = false;
 	public Image[] isPlayingTexts;
@@ -69,26 +69,6 @@ public class GameManager : MonoBehaviour {
 	public bool canControlCars = true;
 	public AudioSource joinUpSound, beep;
 	InputSystem inputSystem;
-//	inputCont thisInputCont;
-
-//	int rotTestInput;
-//	int pedTestInput;
-
-//  void saveAllVals(){
-//    thisInputCont = new inputCont();
-//    for(int i = 0; i<8; i++){
-//      inputData currInputData = new inputData();
-//      currInputData.id = i;
-//      currInputData.minPed = inputSystem.players[i].pedalData.min;
-//      currInputData.maxPed = inputSystem.players[i].pedalData.max;
-//      currInputData.minWheel = inputSystem.players[i].wheelData.min;
-//      currInputData.maxWheel = inputSystem.players[i].wheelData.max;
-//      thisInputCont.savedPlayers.Add(currInputData);
-//    }
-//   thisInputCont.Save(Path.Combine(Application.persistentDataPath, "configData.xml"));
-//   print(Application.persistentDataPath);
-//  print("SAVED XML");
-//  }
 
 	void OnLevelWasLoaded(int level) {
 		if (level == 0) {
@@ -103,6 +83,13 @@ public class GameManager : MonoBehaviour {
 			if (beep == null)
 				beep = GameObject.Find("Beep").GetComponent<AudioSource>();
 			currentState = State.Intro;
+		} else if (level == 1) {
+			currentState = State.Main;
+			for (int i = 0; i < playersJoined.Length; i++) {
+				if(playersJoined[i]) {
+					PlayerManager.s_instance.Addplayer(i);
+				}
+			}
 		}
 	}
 
@@ -117,42 +104,32 @@ public class GameManager : MonoBehaviour {
 
 	void Start() {
 		inputSystem = InputSystem.s_instance;
-//    if(debugMode) {
-//      setDebugVals(0);
-//    } else {
-    
-//		}
 
-//    if(configured){
-//      thisInputCont = inputCont.Load(Path.Combine(Application.persistentDataPath, "configData.xml"));
-//      for(int i = 0; i <8;i++){
-//        inputSystem.players[i].pedalData.min = thisInputCont.savedPlayers[i].minPed;
-//        inputSystem.players[i].pedalData.max = thisInputCont.savedPlayers[i].maxPed;
-//        inputSystem.players[i].wheelData.min = thisInputCont.savedPlayers[i].minWheel;
-//        inputSystem.players[i].wheelData.max = thisInputCont.savedPlayers[i].maxWheel;
-//      }
-//			currentState = States.startScreen;
-//    } else {
-//    	Application.LoadLevel("Config");
-//    }
 		for (int  i = 0; i < 8; i++) {
 			isPlayingTexts [i] = GameObject.Find("P" + (i + 1)).GetComponent<Image>();
 			isPlayingTexts [i].gameObject.SetActive(false);
 		}
 		if (counterText == null)
 			counterText = GameObject.Find("Timer").GetComponent<Text>();
-	}
 
-//  void setDebugVals(int id){
-//    inputSystem.players[id].wheelData.min = 0;
-//    inputSystem.players[id].wheelData.max = 500;
-//    inputSystem.players[id].pedalData.min = 0;
-//    inputSystem.players[id].pedalData.max = 500;
-//  }
+		if (!inputSystem.inputLoaded) {
+			currentState = State.Config;
+			Application.LoadLevel("Config");
+		} else {
+			currentState = State.Intro;
+		}
+	}
+	
 #if LOG_SERIAL
 	void Update() {
 		if (Input.GetKeyDown(KeyCode.Q)) {
 			showDebugStr = !showDebugStr;
+		}
+
+		if (Input.GetKeyDown(KeyCode.X)) {
+			currentState = State.Config;
+			StopAllCoroutines();
+			Application.LoadLevel("Config");
 		}
 
 		if (Input.GetKeyDown(KeyCode.S)) {
@@ -160,7 +137,7 @@ public class GameManager : MonoBehaviour {
 				Application.LoadLevel("Intro");
 			} else {
 				for (int i = 0; i < InputSystem.NUM_PLAYERS; i++) {
-					playerBools [i] = true;
+					playersJoined [i] = true;
 					isPlayingTexts [i].gameObject.SetActive(true);
 					if (!isCountingDown) {
 						StartCoroutine("CountDown");
@@ -184,7 +161,6 @@ public class GameManager : MonoBehaviour {
 			beep.Play();
 		}
 		Application.LoadLevel(1);
-		currentState = State.Main;
 	}
 
 	//FIXME
@@ -203,7 +179,7 @@ public class GameManager : MonoBehaviour {
 //		}
 //	}
 
-	public void SerialInputRecieved(int[] message) {  
+	public void SerialInputRecieved(int[] message) { 
 		if (debugMode && message.Length != 4) {
 			return;
 		}
@@ -224,16 +200,22 @@ public class GameManager : MonoBehaviour {
 			+ "\n  Wheel: \n"
 			+ "    Norm: " + wheelNormalized.ToString("F2") + " Cur: " + wheelIntensity + " Min: " + inputSystem.players [player].wheel.min + " Max: " + inputSystem.players [player].wheel.max;
 #endif
+
+		if (!inputSystem.inputAvailable) {
+			return;
+		}
+
 		switch (currentState) {
 			case State.Main:
 				if (canControlCars) {
+					if (!playersJoined [player])
+						return;
 					PlayerManager.s_instance.SendOSCDataToCar(player, pedalNormalized, wheelNormalized);
 				}
 				break;
 			case State.Intro:
-				print("I'M AT START SCREEN");
-				if (pedalNormalized < .5f && playerBools [player] == false) {
-					playerBools [player] = true;
+				if (pedalNormalized < .5f && playersJoined [player] == false) {
+					playersJoined [player] = true;
 					isPlayingTexts [player].gameObject.SetActive(true);
 					if (!isCountingDown) {
 						StartCoroutine("CountDown");

@@ -10,8 +10,8 @@ public class PlayerGUI : MonoBehaviour {
 	public Sprite[] places, laps;
 
 	void Awake() {
-		lap = transform.FindChild("CurLap").GetComponent<Image>();
-		place = transform.FindChild("Place").GetComponent<Image>();
+		lap = transform.FindChild("Canvas").FindChild("CurLap").GetComponent<Image>();
+		place = transform.FindChild("Canvas").FindChild("Place").GetComponent<Image>();
 
 		if (flipCam) {
 			transform.parent.GetComponentInChildren<HoverFollowCam>().flipCam = flipCam;
