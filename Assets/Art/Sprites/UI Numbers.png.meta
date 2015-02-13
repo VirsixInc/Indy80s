@@ -2,26 +2,26 @@ fileFormatVersion: 2
 guid: db974191f7254354b9a227a80e04448c
 TextureImporter:
   fileIDToRecycleName:
-    21300000: UI Numbers_0
-    21300002: UI Numbers_1
-    21300004: UI Numbers_2
-    21300006: UI Numbers_3
-    21300008: UI Numbers_4
-    21300010: UI Numbers_5
-    21300012: UI Numbers_6
-    21300014: UI Numbers_7
-    21300016: UI Numbers_8
-    21300018: UI Numbers_9
+    21300000: Lap_1
+    21300002: Lap_2
+    21300004: Lap_3
+    21300006: Lap_4
+    21300008: Lap_5
+    21300010: Lap_6
+    21300012: Lap_7
+    21300014: Lap_8
+    21300016: Lap_9
+    21300018: Lap_0
     21300020: UI_Numbers_Slash
     21300022: UI_BG
-    21300024: UI Numbers_1st
-    21300026: UI Numbers_2nd
-    21300028: UI Numbers_3rd
-    21300030: UI Numbers_4th
-    21300032: UI Numbers_5th
-    21300034: UI Numbers_6th
-    21300036: UI Numbers_7th
-    21300038: UI Numbers_8th
+    21300024: Place_1
+    21300026: Place_2
+    21300028: Place_3
+    21300030: Place_4
+    21300032: Place_5
+    21300034: Place_7
+    21300036: Place_6
+    21300038: Place_8
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -63,103 +63,103 @@ TextureImporter:
   buildTargetSettings: []
   spriteSheet:
     sprites:
-    - name: UI Numbers_0
+    - name: Lap_1
       rect:
         serializedVersion: 2
-        x: 278
-        y: 846
-        width: 99
-        height: 163
+        x: 220
+        y: 845
+        width: 215
+        height: 165
       alignment: 0
       pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
-    - name: UI Numbers_1
+    - name: Lap_2
       rect:
         serializedVersion: 2
         x: 464
-        y: 846
-        width: 212
-        height: 162
+        y: 845
+        width: 215
+        height: 165
       alignment: 0
       pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
-    - name: UI Numbers_2
+    - name: Lap_3
       rect:
         serializedVersion: 2
-        x: 778
-        y: 846
-        width: 208
-        height: 162
+        x: 774
+        y: 845
+        width: 215
+        height: 165
       alignment: 0
       pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
-    - name: UI Numbers_3
+    - name: Lap_4
       rect:
         serializedVersion: 2
-        x: 1089
-        y: 846
-        width: 200
-        height: 163
+        x: 1080
+        y: 845
+        width: 215
+        height: 165
       alignment: 0
       pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
-    - name: UI Numbers_4
+    - name: Lap_5
       rect:
         serializedVersion: 2
-        x: 1388
-        y: 846
-        width: 212
-        height: 163
+        x: 1385
+        y: 845
+        width: 215
+        height: 165
       alignment: 0
       pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
-    - name: UI Numbers_5
+    - name: Lap_6
       rect:
         serializedVersion: 2
-        x: 1699
-        y: 846
-        width: 211
-        height: 162
+        x: 1695
+        y: 845
+        width: 215
+        height: 165
       alignment: 0
       pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
-    - name: UI Numbers_6
+    - name: Lap_7
       rect:
         serializedVersion: 2
-        x: 2013
-        y: 846
-        width: 200
-        height: 163
+        x: 2001
+        y: 845
+        width: 215
+        height: 165
       alignment: 0
       pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
-    - name: UI Numbers_7
+    - name: Lap_8
       rect:
         serializedVersion: 2
-        x: 2293
-        y: 846
-        width: 212
-        height: 162
+        x: 2289
+        y: 845
+        width: 215
+        height: 165
       alignment: 0
       pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
-    - name: UI Numbers_8
+    - name: Lap_9
       rect:
         serializedVersion: 2
-        x: 2604
-        y: 846
-        width: 208
-        height: 162
+        x: 2600
+        y: 845
+        width: 215
+        height: 165
       alignment: 0
       pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
-    - name: UI Numbers_9
+    - name: Lap_0
       rect:
         serializedVersion: 2
-        x: 2919
+        x: 2917
         y: 846
-        width: 211
-        height: 163
+        width: 215
+        height: 165
       alignment: 0
       pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -183,83 +183,83 @@ TextureImporter:
       alignment: 0
       pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
-    - name: UI Numbers_1st
+    - name: Place_1
       rect:
         serializedVersion: 2
-        x: 261
+        x: 274
         y: 256
-        width: 424
-        height: 267
+        width: 400
+        height: 250
       alignment: 0
       pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
-    - name: UI Numbers_2nd
+    - name: Place_2
       rect:
         serializedVersion: 2
-        x: 759
+        x: 763
         y: 256
-        width: 407
-        height: 267
+        width: 400
+        height: 250
       alignment: 0
       pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
-    - name: UI Numbers_3rd
+    - name: Place_3
       rect:
         serializedVersion: 2
-        x: 1204
-        y: 260
-        width: 429
-        height: 259
+        x: 1217
+        y: 256
+        width: 400
+        height: 250
       alignment: 0
       pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
-    - name: UI Numbers_4th
+    - name: Place_4
       rect:
         serializedVersion: 2
         x: 1622
-        y: 260
-        width: 391
-        height: 258
-      alignment: 0
-      pivot: {x: .5, y: .5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-    - name: UI Numbers_5th
-      rect:
-        serializedVersion: 2
-        x: 2041
         y: 256
-        width: 428
-        height: 267
+        width: 400
+        height: 250
       alignment: 0
       pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
-    - name: UI Numbers_6th
+    - name: Place_5
       rect:
         serializedVersion: 2
-        x: 2466
+        x: 2054
         y: 256
-        width: 438
-        height: 267
+        width: 400
+        height: 250
       alignment: 0
       pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
-    - name: UI Numbers_7th
+    - name: Place_6
       rect:
         serializedVersion: 2
-        x: 2911
-        y: 259
-        width: 386
-        height: 264
-      alignment: 0
-      pivot: {x: .5, y: .5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-    - name: UI Numbers_8th
-      rect:
-        serializedVersion: 2
-        x: 3337
+        x: 2480
         y: 256
-        width: 395
-        height: 267
+        width: 400
+        height: 250
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Place_7
+      rect:
+        serializedVersion: 2
+        x: 2909
+        y: 256
+        width: 400
+        height: 250
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Place_8
+      rect:
+        serializedVersion: 2
+        x: 3333
+        y: 256
+        width: 400
+        height: 250
       alignment: 0
       pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}

@@ -21,6 +21,8 @@ public class CarData : MonoBehaviour {
 	CarAnimationController myCarAnimationController;
 //	public float distanceFromLastWayPoint;
 	PlayerGUI gui;
+
+	int lapsToWin = 3;
 	
 	void Start() {
 //		engine = GameObject.Find("CarRaceSound" + playerNumber.ToString()).GetComponent<AudioSource>(); //FIXME
@@ -64,7 +66,7 @@ public class CarData : MonoBehaviour {
 		if (other.gameObject.tag == "WayPoint") {
 			lastWayPoint = other.gameObject;
 			if (other.GetComponent<PathNode>().ReturnDistanceToEnd() == 0) {
-				if (lap == PlayerManager.s_instance.lapsToWin) {
+				if (lap == lapsToWin) {
 //					PlayerManager.s_instance.Win(id); //FIXME
 				} else if (hasGoneHalfWay) {
 					lap++;
@@ -90,7 +92,7 @@ public class CarData : MonoBehaviour {
 
 	//RESPAWN.CS
 
-	float explosionTime = 0;//, heightAboveTrackForRespawn = 100f;
+//	float explosionTime = 0;//, heightAboveTrackForRespawn = 100f;
 	public GameObject explosionPrefab;
 	Transform spawnPosition;
 	//	GameObject tempExplosion;

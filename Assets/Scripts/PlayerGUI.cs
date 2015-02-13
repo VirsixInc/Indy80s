@@ -1,21 +1,29 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class PlayerGUI : MonoBehaviour {
+	public bool flipCam = false;
 
-	void Start () {
-	
+	Image lap, place;
+
+	public Sprite[] places, laps;
+
+	void Awake() {
+		lap = transform.FindChild("CurLap").GetComponent<Image>();
+		place = transform.FindChild("Place").GetComponent<Image>();
+
+		if (flipCam) {
+			transform.parent.GetComponentInChildren<HoverFollowCam>().flipCam = flipCam;
+			transform.FindChild("Canvas").localEulerAngles = new Vector3(0f, 0f, 180f);
+		}
 	}
-	
-	void Update () {
-	
+
+	public void UpdatePlace(int newPlace) {
+		place.sprite = places [newPlace];
 	}
 
-	public void UpdatePlace(int place) {
-
-	}
-
-	public void UpdateLap(int lap) {
-
+	public void UpdateLap(int newLap) {
+		lap.sprite = laps [newLap];
 	}
 }

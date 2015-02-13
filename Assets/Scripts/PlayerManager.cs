@@ -18,16 +18,15 @@ public class PlayerManager : MonoBehaviour {
 	public Transform carSpawnSpots;
 
 	//all of the images on each players screen that say 1st 2nd 3rd etc
-	public GameObject[] placeInRaceAssets;
-	public GameObject[] lapNumberAssets;
+//	public GameObject[] placeInRaceAssets;
+//	public GameObject[] lapNumberAssets;
 	public Sprite win, lose;
 	
 	//getters
-	public List<CarData> ReturnCars(){return cars;}
-	public GameObject[] ReturnPlaceInRaceAssets(){return placeInRaceAssets;}
-	public GameObject[] ReturnLapNumberAssets(){return lapNumberAssets;}
-	public int lapsToWin = 3;
-
+	public List<CarData> ReturnCars() {return cars;}
+//	public GameObject[] ReturnPlaceInRaceAssets(){return placeInRaceAssets;}
+//	public GameObject[] ReturnLapNumberAssets(){return lapNumberAssets;}
+	
 	void Awake() {
 		s_instance = this;
 		cars = new List<CarData>();
@@ -136,13 +135,9 @@ public class PlayerManager : MonoBehaviour {
 		
 	}
 	//	}
-	
-
 
 	//part of dec 31st version of PLAYERMANAGER
 	public void SendOSCDataToCar(int playerID, float pedalIntensity, float wheelIntensity) {
 		cars [playerID].UpdateInput(pedalIntensity, wheelIntensity);
 	}
-
-
 }
