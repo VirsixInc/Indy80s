@@ -3,42 +3,42 @@
   <players>
     <PlayerInput>
       <wheelData>
-        <min>345</min>
-        <max>917.363647</max>
+        <min>356</min>
+        <max>920.0909</max>
       </wheelData>
       <pedalData>
-        <min>97.72727</min>
-        <max>463</max>
+        <min>104</min>
+        <max>463.272736</max>
       </pedalData>
     </PlayerInput>
     <PlayerInput>
       <wheelData>
-        <min>291</min>
-        <max>816.2727</max>
+        <min>303.9091</min>
+        <max>818.2727</max>
       </wheelData>
       <pedalData>
-        <min>143</min>
+        <min>146</min>
         <max>510</max>
       </pedalData>
     </PlayerInput>
     <PlayerInput>
       <wheelData>
-        <min>303</min>
-        <max>821.636353</max>
+        <min>315</min>
+        <max>828</max>
       </wheelData>
       <pedalData>
-        <min>191</min>
-        <max>519</max>
+        <min>205.454544</min>
+        <max>519.0909</max>
       </pedalData>
     </PlayerInput>
     <PlayerInput>
       <wheelData>
-        <min>204.545456</min>
-        <max>799.8182</max>
+        <min>217.72728</min>
+        <max>803.7273</max>
       </wheelData>
       <pedalData>
-        <min>184</min>
-        <max>545</max>
+        <min>181.72728</min>
+        <max>541</max>
       </pedalData>
     </PlayerInput>
     <PlayerInput>

@@ -153,6 +153,13 @@ public class InputSystem : MonoBehaviour {
 		playerData.Save();
 	}
 
+	public void ResetValues() {
+		for(int i = 0; i < players.Length; i++) {
+			players[i].pedalData.min = players[i].wheelData.min = 9999f;
+			players[i].pedalData.max = players[i].wheelData.max = -9999f;
+		}
+	}
+
 	public PlayerInput[] players {
 		get {
 			return playerData.players;

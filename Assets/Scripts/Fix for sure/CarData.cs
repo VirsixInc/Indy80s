@@ -3,23 +3,24 @@ using System.Collections;
 using UnityEngine.UI;
 
 public class CarData : MonoBehaviour {
-	
-	//CarData is attached to each car gameobject	
 	public int lap = 1;
 	[HideInInspector]
 	public int playerNumber;
 	[HideInInspector]
 	public int currentPlace;
-	bool hasGoneHalfWay;
-	GameObject lastWayPoint;	//lastWayPoint is used to calculate place and spawnpoint
+//	bool hasGoneHalfWay;
+	[HideInInspector]
+	public PathNode lastWayPoint;	//lastWayPoint is used to calculate place and spawnpoint
 
 	public bool invertWheel = false;
 //	public bool invertPedal = false;
+
 	public AudioSource engine;
-//	float enginePitchRatio = .01f;
-	MotoPhysics carController;
+
+	[HideInInspector]
+	public MotoPhysics carController;
 	CarAnimationController myCarAnimationController;
-//	public float distanceFromLastWayPoint;
+
 	PlayerGUI gui;
 
 	int lapsToWin = 3;
@@ -30,22 +31,25 @@ public class CarData : MonoBehaviour {
 		carController = GetComponentInChildren<MotoPhysics>();
 		myCarAnimationController = gameObject.GetComponentInChildren<CarAnimationController>();
 
-//		lastWayPoint = PathNode.first; first cannot be isStart with the way PathNode is currently set up - we could make it this way later
-//		StartCoroutine ("CheckRespawn");
+		lastWayPoint = PathNode.first;
 
 		gui = transform.FindChild("GUI").GetComponent<PlayerGUI>();
 
-		lastWayPoint = PathNode.first.gameObject;
+		lastWayPoint = PathNode.first;
+	}
+
+	void Update() {
+		float zRotation = carController.gameObject.transform.rotation.eulerAngles.z;
+		if ((zRotation > 50f && zRotation < 140f) || (zRotation > 220 && zRotation < 310f)) {
+			if (isRespawning == false)
+				StartCoroutine("Explode");		
+		} 
 	}
 	
 	//SetCarCurrentPlace, called from PlayerManager
-	public void SetCarCurrentPlace(int newPlace) {
+	public void UpdateCurrentPlace(int newPlace) {
 		currentPlace = newPlace;
 		gui.UpdatePlace(newPlace);
-	}
-	
-	public void SetLastWayPoint(GameObject newPathNode) {
-		lastWayPoint = newPathNode;
 	}
 
 	public void UpdateInput(float newPedalIntensity, float newWheelIntensity) {
@@ -64,26 +68,18 @@ public class CarData : MonoBehaviour {
 			StartCoroutine("Explode");
 		}    
 		if (other.gameObject.tag == "WayPoint") {
-			lastWayPoint = other.gameObject;
-			if (other.GetComponent<PathNode>().distanceToEnd == 0) {
+			PathNode pathNode = other.GetComponent<PathNode>();
+			lastWayPoint = pathNode;
+			if (pathNode.IsStart()) {
+				lap++;
+				print(lap + " -> lap++ = " + lap);
+				gui.UpdateLap(lap);
 				if (lap == lapsToWin) {
 //					PlayerManager.s_instance.Win(id); //FIXME
-				} else if (hasGoneHalfWay) {
-					lap++;
-					gui.UpdateLap(lap);
-					hasGoneHalfWay = false;
 				}
 				
-			}// else if (other.GetComponent<PathNode>().IsHalfWay()) {
-			//	hasGoneHalfWay = true;
-			//}
+			}
 		}
-	}
-	
-	public float CalculateDistanceFromLastWayPoint() {
-		//we may want to take the negative value of this to invert order
-//		float distanceFromLastWayPoint = Vector3.Distance(lastWayPoint.transform.position, transform.position); //for debug
-		return Vector3.Distance(lastWayPoint.transform.position, transform.position);
 	}
 
 	void UpdateSound(float pedal) {
@@ -91,11 +87,9 @@ public class CarData : MonoBehaviour {
 	}
 
 	//RESPAWN.CS
-
-//	float explosionTime = 0;//, heightAboveTrackForRespawn = 100f;
+	
 	public GameObject explosionPrefab;
 	Transform spawnPosition;
-	//	GameObject tempExplosion;
 	bool isRespawning = false;
 
 	public void TriggerExplode() {
@@ -130,14 +124,6 @@ public class CarData : MonoBehaviour {
 //		carController.Reset();
 		carController.enabled = true;
 //		carController.canMove = true;
-	}
-	
-	void Update() {
-		float zRotation = carController.gameObject.transform.rotation.eulerAngles.z;
-		if ((zRotation > 50f && zRotation < 140f) || (zRotation > 220 && zRotation < 310f)) {
-			if (isRespawning == false)
-				StartCoroutine("Explode");		
-		} 
 	}
 }
 

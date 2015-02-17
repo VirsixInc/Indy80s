@@ -17,6 +17,7 @@ public class Configure : MonoBehaviour {
 
 	void Start () {
 		inputSystem = InputSystem.s_instance;
+		inputSystem.ResetValues();
 		if (inputSystem == null) {
 			Debug.LogError("Can't find component InputSystem", this);
 			enabled = false;
@@ -72,9 +73,15 @@ public class Configure : MonoBehaviour {
 		string text = "Player " + (currentPlayer + 1) + " " + currentType.ToString() + " ";
 
 		if(logMinimum)
-			text += "min";
+			if(currentType == InputSystem.PlayerInput.Type.Pedal)
+				text += "down";
+			else
+				text += "right";
 		else
-			text += "max";
+			if(currentType == InputSystem.PlayerInput.Type.Pedal)
+				text += "up";
+			else
+				text += "left";
 
 		for (int i = 0; i < infoText.Length; i++) {
 			infoText[i].text = text;

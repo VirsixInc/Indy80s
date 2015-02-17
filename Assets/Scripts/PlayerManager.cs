@@ -19,10 +19,7 @@ public class PlayerManager : MonoBehaviour {
 	public Transform carSpawnSpots;
 	
 	public Sprite win, lose;
-	
-	//getters
-	public List<CarData> ReturnCars() {return cars;}
-	
+
 	void Awake() {
 		s_instance = this;
 		cars = new List<CarData>();
@@ -64,73 +61,43 @@ public class PlayerManager : MonoBehaviour {
 
 	//sets the place of each car to 1st, 2nd, 3rd etc....
 	public void UpdatePlaces() {
+		List<CarData> sortedCarList = new List<CarData>();
 
-		//FIXME 
-//		//sort cars by all metrics
-//		List<CarData> sortCarList = new List<CarData>();
-//		foreach (CarData car in PlayerManager.s_instance.cars) {
-//			if (sortCarList.Count == 0) //if this car is playing, put him in the sort list
-//				sortCarList.Insert(0, car);
-//			else if (sortCarList.Count > 0 && sortCarList[0].ReturnLastWayPoint()!=null) { //if this car is playing, put him in the sort list, not sure why returnlastwaypoint is there
-//				for (int i = 0; i < sortCarList.Count; i++) {
-//					//if car greater lap than position i, insert at i
-//					if (car.lap > sortCarList[i].lap) { 
-//						sortCarList.Insert(i, car);
-//						break;
-//					}
-//					
-//					//if car same lap but farther along on track
-//					else if (car.ReturnLastWayPoint().GetComponent<PathNode>().ReturnDistanceToEnd() < sortCarList[i].ReturnLastWayPoint().GetComponent<PathNode>().ReturnDistanceToEnd() 
-//					         && 
-//					         car.lap == sortCarList[i].lap
-//					         &&
-//					         //does not apply during stretch from start to first waypoint when two cars are on same lap but one sortList's is farther
-//					         car.ReturnLastWayPoint().GetComponent<PathNode>().ReturnDistanceToEnd()!=0
-//					         &&
-//					         sortCarList[i].ReturnLastWayPoint().GetComponent<PathNode>().ReturnDistanceToEnd()!=0) {
-//						sortCarList.Insert(i, car); 
-//						break;
-//					}
-//					
-//					else if (car.ReturnLastWayPoint().GetComponent<PathNode>().ReturnDistanceToEnd() > sortCarList[i].ReturnLastWayPoint().GetComponent<PathNode>().ReturnDistanceToEnd()
-//					         &&
-//					         sortCarList[i].ReturnLastWayPoint().GetComponent<PathNode>().ReturnDistanceToEnd()==0) {
-//						sortCarList.Insert(i, car); 
-//						break;
-//					}
-//					
-//					//if cars same lap and same waypoint
-//					else if (car.ReturnLastWayPoint().GetComponent<PathNode>().ReturnDistanceToEnd() == sortCarList[i].ReturnLastWayPoint().GetComponent<PathNode>().ReturnDistanceToEnd()
-//					         && 
-//					         car.lap == sortCarList[i].lap) {
-//						//compare distance 
-//						if (car.CalculateDistanceFromLastWayPoint() > sortCarList[i].CalculateDistanceFromLastWayPoint()) { 
-//							sortCarList.Insert(i, car);
-//							break;
-//						}
-//						else if (i == (sortCarList.Count-1)) { //if all the cars have been compared against, insert at the end
-//							sortCarList.Insert(sortCarList.Count, car);
-//							break;
-//						}
-//					}
-//					
-//					else if (i == (sortCarList.Count-1)) { //if all the cars have been compared against, insert at the end
-//						sortCarList.Insert(sortCarList.Count, car);
-//						break;
-//					}
-//				}
-//			}
-//		}
-//		
-//		
-//		for (int i = 0; i < sortCarList.Count(); i++) { // iterate through an ordered list of cars and their current place to the index of where they are wrt the array
-//			sortCarList[i].SetCarCurrentPlace(i+1);
-//		}
-		
+		for(int i = 0; i < cars.Count; i++) {
+			if(sortedCarList.Count < 1)
+				sortedCarList.Add(cars[i]);
+			else {
+				bool inserted = false;
+				for(int j = 0; j < sortedCarList.Count && !inserted; j++) {
+					if(cars[i].lap > sortedCarList[j].lap) {
+						sortedCarList.Insert(j, cars[i]);
+						inserted = true;
+					} else {
+						if(cars[i].lastWayPoint.distanceToEnd < sortedCarList[j].lastWayPoint.distanceToEnd) {
+							sortedCarList.Insert(j, cars[i]);
+							inserted = true;
+						} else if(cars[i].lastWayPoint == sortedCarList[j].lastWayPoint) {
+							float dist1 = Vector3.Distance(cars[i].carController.transform.position, cars[i].lastWayPoint.nextPaths[0].transform.position);
+							float dist2 = Vector3.Distance(sortedCarList[j].carController.transform.position, cars[i].lastWayPoint.nextPaths[0].transform.position);
+							Debug.DrawLine(cars[i].carController.transform.position, cars[i].lastWayPoint.nextPaths[0].transform.position, Color.yellow);
+							Debug.DrawLine(sortedCarList[j].carController.transform.position, cars[i].lastWayPoint.nextPaths[0].transform.position, Color.red);
+							if(dist1 < dist2) {
+								sortedCarList.Insert(j, cars[i]);
+								inserted = true;
+							}
+						}
+					}
+				}
+				if(!inserted) 
+					sortedCarList.Add(cars[i]);
+			}
+		}
+
+		for(int i = 0; i < sortedCarList.Count; i++) {
+			sortedCarList[i].UpdateCurrentPlace(i);
+		}
 	}
-	//	}
-
-	//part of dec 31st version of PLAYERMANAGER
+	
 	public void SendOSCDataToCar(int playerID, float pedalIntensity, float wheelIntensity) {
 		if (idToList.ContainsKey(playerID)) {
 			int index = idToList [playerID];

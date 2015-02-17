@@ -50,10 +50,14 @@ public class PathNode : MonoBehaviour {
 		}
 	}
 
+	public bool IsStart() {
+		return (this == PathNode.first);
+	}
+
 	#if UNITY_EDITOR
 	Color[] colors = {Color.cyan, Color.green, Color.red, Color.yellow, Color.blue};
 
-	void OnDrawGizmos() {
+	void OnDrawGizmosSelected() {
 		PathNode[] nodes = FindObjectsOfType<PathNode> ();
 		
 		for(int i = 0; i < nodes.Length; i++) {
