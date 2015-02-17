@@ -31,7 +31,7 @@ public class DrawSpawnPositions : MonoBehaviour {
 		}
 	}
 
-	void DrawArrow(Vector3 pos, Vector3 forward, Vector3 right, float length) {
+	public static void DrawArrow(Vector3 pos, Vector3 forward, Vector3 right, float length) {
 		Gizmos.DrawRay(pos, forward * length);
 		Gizmos.DrawRay(pos + forward * length, (right - forward) * length/4f);
 		Gizmos.DrawRay(pos + forward * length, (-right - forward) * length/4f);

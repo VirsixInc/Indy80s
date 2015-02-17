@@ -76,6 +76,8 @@ public class PathNode : MonoBehaviour {
 					nodes[i].prevPaths.RemoveAt(j);
 				}
 			}
+			Gizmos.color = colors[2];
+			DrawSpawnPositions.DrawArrow(nodes[i].transform.position, nodes[i].transform.forward, nodes[i].transform.right, 18f);
 		}
 	}
 	#endif	

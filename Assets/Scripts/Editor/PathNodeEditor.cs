@@ -34,6 +34,10 @@ public class PathNodeEditor : Editor {
 			PathNode.distanceCalculated = CalculateDistanceToEnd();
 		}
 
+		if (GUILayout.Button("Fix rotations")) {
+			FixRotations();
+		}
+
 		EditorGUILayout.Space();
 
 		if (GUILayout.Button("New node")) {
@@ -43,7 +47,7 @@ public class PathNodeEditor : Editor {
 		serializedObject.ApplyModifiedProperties();
 	}
 
-	public bool ValidatePath() { //TODO count how many next and prevs and make sure they match up. Make sure first is working as intented
+	bool ValidatePath() { //TODO count how many next and prevs and make sure they match up. Make sure first is working as intented
 		PathNode cur = PathNode.first;
 		if (cur != null) {
 			do {
@@ -77,7 +81,7 @@ public class PathNodeEditor : Editor {
 		return false;
 	}
 
-	public bool CalculateDistanceToEnd() { //TODO everything. Calculate back to front and store along the way instead of this n^2 BS.
+	bool CalculateDistanceToEnd() { //TODO everything. Calculate back to front and store along the way instead of this n^2 BS.
 		if (PathNode.pathValidated) {
 			PathNode[] pathNodes = FindObjectsOfType<PathNode>();
 			foreach (PathNode pathNode in pathNodes) {
@@ -93,6 +97,18 @@ public class PathNodeEditor : Editor {
 		} else {
 			Debug.LogWarning("Path not validated!");
 			return false;
+		}
+	}
+
+	void FixRotations() {
+		if (PathNode.pathValidated) {
+			PathNode[] pathNodes = FindObjectsOfType<PathNode>();
+			foreach (PathNode pathNode in pathNodes) {
+				pathNode.transform.LookAt(pathNode.nextPaths[0].transform.position);
+			}
+		} else {
+			Debug.LogWarning("Path not validated!");
+			return;
 		}
 	}
 
