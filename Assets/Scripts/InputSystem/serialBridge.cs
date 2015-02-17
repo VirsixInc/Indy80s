@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.IO.Ports;
 using System.Threading;
  
-public class serialBridge : MonoBehaviour {
+public class SerialBridge : MonoBehaviour {
 	public string portOne;
 	public string portTwo;
 	public bool useSecond;

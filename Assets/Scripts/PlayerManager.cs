@@ -17,29 +17,20 @@ public class PlayerManager : MonoBehaviour {
 	public Dictionary<int, int> idToList; // Eh, efficient but not clean... //FIXME MAYBE?
 	public List<GameObject> carPrefabs;
 	public Transform carSpawnSpots;
-
-	//all of the images on each players screen that say 1st 2nd 3rd etc
-//	public GameObject[] placeInRaceAssets;
-//	public GameObject[] lapNumberAssets;
+	
 	public Sprite win, lose;
 	
 	//getters
 	public List<CarData> ReturnCars() {return cars;}
-//	public GameObject[] ReturnPlaceInRaceAssets(){return placeInRaceAssets;}
-//	public GameObject[] ReturnLapNumberAssets(){return lapNumberAssets;}
 	
 	void Awake() {
 		s_instance = this;
 		cars = new List<CarData>();
 		idToList = new Dictionary<int, int>();
 	}
-
-	void Start() {
-
-	}
-
+	
 	void Update() {
-		UpdatePlaces ();
+		UpdatePlaces (); //TODO not every frame?
 	}
 
 	public void Addplayer(int player) {

@@ -65,7 +65,7 @@ public class CarData : MonoBehaviour {
 		}    
 		if (other.gameObject.tag == "WayPoint") {
 			lastWayPoint = other.gameObject;
-			if (other.GetComponent<PathNode>().ReturnDistanceToEnd() == 0) {
+			if (other.GetComponent<PathNode>().distanceToEnd == 0) {
 				if (lap == lapsToWin) {
 //					PlayerManager.s_instance.Win(id); //FIXME
 				} else if (hasGoneHalfWay) {
@@ -74,9 +74,9 @@ public class CarData : MonoBehaviour {
 					hasGoneHalfWay = false;
 				}
 				
-			} else if (other.GetComponent<PathNode>().IsHalfWay()) {
-				hasGoneHalfWay = true;
-			}
+			}// else if (other.GetComponent<PathNode>().IsHalfWay()) {
+			//	hasGoneHalfWay = true;
+			//}
 		}
 	}
 	
