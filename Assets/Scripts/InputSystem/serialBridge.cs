@@ -18,6 +18,8 @@ public class SerialBridge : MonoBehaviour {
 	private List<int[]> packetQueue = new List<int[]>();
 
 	bool cleanStream1 = true;
+
+	private bool connected = false;
 	
 	void Start() {
 		try {
@@ -31,6 +33,7 @@ public class SerialBridge : MonoBehaviour {
 			}
 			thread = new Thread(new ThreadStart(readSerial));
 			thread.Start();
+			connected = true;
 		} catch (Exception e) {
 			Debug.Log(e.Message);
 		}
@@ -55,7 +58,7 @@ public class SerialBridge : MonoBehaviour {
 	}
 
 	private void readSerial() {
-		while (stream.IsOpen) {
+		while (stream.IsOpen && connected) {
 			try {
 				string[] lineToRead = stream.ReadLine().Split('|'); 
 				string[] lineToRead2 = new string[3];
@@ -75,10 +78,11 @@ public class SerialBridge : MonoBehaviour {
 						}
 					}
 				}
+//				stream.DiscardInBuffer();
 				stream.BaseStream.Flush(); 
 			} catch (Exception e) { 
 				Debug.Log(e.Message);
-				Console.WriteLine(e.Message); 
+				//Console.WriteLine(e.Message); 
 			}
 			if(cleanStream1) {
 				lock(packetQueue) {
@@ -87,5 +91,17 @@ public class SerialBridge : MonoBehaviour {
 				cleanStream1 = false;
 			}
 		}
+	}
+
+	public void OnApplicationQuit () {
+		if (stream != null) {
+			stream.Close ();
+		}
+		if (thread.IsAlive) {
+			connected = false;
+			thread.Join();
+		}
+		
+		stream = null;
 	}
 }
