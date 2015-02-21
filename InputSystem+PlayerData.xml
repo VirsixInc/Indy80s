@@ -1,44 +1,44 @@
-<?xml version="1.0" encoding="us-ascii"?>
+<?xml version="1.0" encoding="Windows-1252"?>
 <PlayerData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <players>
     <PlayerInput>
       <wheelData>
-        <min>356</min>
-        <max>920.0909</max>
+        <min>9999</min>
+        <max>-9999</max>
       </wheelData>
       <pedalData>
-        <min>104</min>
-        <max>463.272736</max>
+        <min>295.727264</min>
+        <max>-9999</max>
       </pedalData>
     </PlayerInput>
     <PlayerInput>
       <wheelData>
-        <min>303.9091</min>
-        <max>818.2727</max>
+        <min>9999</min>
+        <max>-9999</max>
       </wheelData>
       <pedalData>
-        <min>146</min>
-        <max>510</max>
+        <min>9999</min>
+        <max>-9999</max>
       </pedalData>
     </PlayerInput>
     <PlayerInput>
       <wheelData>
-        <min>315</min>
-        <max>828</max>
+        <min>9999</min>
+        <max>-9999</max>
       </wheelData>
       <pedalData>
-        <min>205.454544</min>
-        <max>519.0909</max>
+        <min>9999</min>
+        <max>-9999</max>
       </pedalData>
     </PlayerInput>
     <PlayerInput>
       <wheelData>
-        <min>217.72728</min>
-        <max>803.7273</max>
+        <min>9999</min>
+        <max>-9999</max>
       </wheelData>
       <pedalData>
-        <min>181.72728</min>
-        <max>541</max>
+        <min>9999</min>
+        <max>-9999</max>
       </pedalData>
     </PlayerInput>
     <PlayerInput>

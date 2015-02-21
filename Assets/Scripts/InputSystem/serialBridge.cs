@@ -6,7 +6,9 @@ using System.IO.Ports;
 using System.Threading;
  
 public class SerialBridge : MonoBehaviour {
+//	[HideInInspector]
 	public string portOne;
+	[HideInInspector]
 	public string portTwo;
 	public bool useSecond;
 	private Thread thread;
@@ -23,6 +25,8 @@ public class SerialBridge : MonoBehaviour {
 	
 	void Start() {
 		try {
+			if(portOne == "None")
+				return;
 			stream = new SerialPort(portOne, baudRate);
 			stream.Open(); //Open the Serial Stream.
 			stream.ReadTimeout = readTimeout;
@@ -97,9 +101,11 @@ public class SerialBridge : MonoBehaviour {
 		if (stream != null) {
 			stream.Close ();
 		}
-		if (thread.IsAlive) {
-			connected = false;
-			thread.Join();
+		if (thread != null) {
+		    if(thread.IsAlive) {
+				connected = false;
+				thread.Join();
+			}
 		}
 		
 		stream = null;
