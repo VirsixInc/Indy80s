@@ -1,4 +1,4 @@
-﻿#define LOG_SERIAL
+﻿//#define LOG_SERIAL
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
@@ -14,51 +14,14 @@ public enum State {
 	Intro, LevelSelect, Main, Config 
 };
 
-//[XmlRoot("inputContainer")]
-//public class inputCont {
-//  [XmlArray("Players"),XmlArrayItem("Player")]
-//  public List<inputData> savedPlayers = new List<inputData>();
-//  public inputData[] players;
-// 
-// 	public void Save(string path){
-// 		var serializer = new XmlSerializer(typeof(inputCont));
-// 		using(var stream = new FileStream(path, FileMode.Create))
-// 		{
-// 			serializer.Serialize(stream, this);
-// 		}
-// 	}
-// 
-// 	public static inputCont Load(string path){
-// 		var serializer = new XmlSerializer(typeof(inputCont));
-// 		using(var stream = new FileStream(path, FileMode.Open))
-// 		{
-// 			return serializer.Deserialize(stream) as inputCont;
-// 		}
-// 	}
-//  public static inputCont LoadFromText(string text){
-// 		var serializer = new XmlSerializer(typeof(inputCont));
-// 		return serializer.Deserialize(new StringReader(text)) as inputCont;
-// 	}
-//}
-//
-//public class inputData {
-//  [XmlAttribute("name")]
-//    public int id;
-//    public float minPed;
-//    public float maxPed;
-//    public float minWheel;
-//    public float maxWheel;
-//}
-
 public class GameManager : MonoBehaviour {
 
-	public bool debugMode;
-#if LOG_SERIAL
+//#if LOG_SERIAL
 	public bool showDebugStr = true;
 	string[] serialInfo = new string[8];
-#endif
+//#endif
 	public bool configured;
-//	public TextAsset inputConfiguration;
+
 	public static GameManager s_instance;
 	public static State currentState = State.Intro;
 	public bool[] playersJoined = {false,false,false,false,false,false,false,false};
@@ -120,7 +83,7 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 	
-#if LOG_SERIAL
+//#if LOG_SERIAL
 	void Update() {
 		if (Input.GetKeyDown(KeyCode.Q)) {
 			showDebugStr = !showDebugStr;
@@ -151,7 +114,7 @@ public class GameManager : MonoBehaviour {
 			}
 		}
 	}
-#endif
+//#endif
 	
 	IEnumerator CountDown() {
 		while (counter > 0) {
@@ -163,27 +126,7 @@ public class GameManager : MonoBehaviour {
 		Application.LoadLevel(1);
 	}
 
-	//FIXME
-//	public void HideIdleCars() {
-//		for (int i =0; i < PlayerManager.s_instance.cars.Length; i++) {
-//			if (!playerBools[i]) {
-//				if(PlayerManager.s_instance != null) {
-//					if(PlayerManager.s_instance.cars[i] != null) {
-//						PlayerManager.s_instance.cars[i].gameObject.SetActive(false);
-//						GameObject.Find("Place" + (i + 1)).SetActive(false);
-//						GameObject.Find("LapNumber" + (i + 1)).SetActive(false);
-//						GameObject.Find("Lap" + (i + 1)).SetActive(false);
-//					}
-//				}
-//			}
-//		}
-//	}
-
 	public void SerialInputRecieved(int[] message) { 
-		if (debugMode && message.Length != 4) {
-			return;
-		}
-
 		float wheelIntensity = (float)message [0];
 		float pedalIntensity = (float)message [1];
 		int player = (int)message [2];
@@ -193,13 +136,13 @@ public class GameManager : MonoBehaviour {
 
 		float pedalNormalized = inputSystem.players [player].pedal.GetRunningAverageNormalized();
 		float wheelNormalized = -(inputSystem.players [player].wheel.GetRunningAverageNormalized() * 2f - 1f);
-#if LOG_SERIAL
+//#if LOG_SERIAL
 		serialInfo [player] = "Player " + player + "\n"
 			+ "  Pedal: \n"
-			+ "    Norm: " + pedalNormalized.ToString("F2") + " Cur: " + pedalIntensity + " Min: " + inputSystem.players [player].pedal.min + " Max: " + inputSystem.players [player].pedal.max
+				+ "    Norm: " + pedalNormalized.ToString("F2") + " Cur: " + pedalIntensity + " Min: " + inputSystem.players [player].pedal.min.ToString("F0") + " Max: " + inputSystem.players [player].pedal.max.ToString("F0")
 			+ "\n  Wheel: \n"
-			+ "    Norm: " + wheelNormalized.ToString("F2") + " Cur: " + wheelIntensity + " Min: " + inputSystem.players [player].wheel.min + " Max: " + inputSystem.players [player].wheel.max;
-#endif
+				+ "    Norm: " + wheelNormalized.ToString("F2") + " Cur: " + wheelIntensity + " Min: " + inputSystem.players [player].wheel.min.ToString("F0") + " Max: " + inputSystem.players [player].wheel.max.ToString("F0");
+//#endif
 
 		if (!inputSystem.inputAvailable) {
 			return;
@@ -233,7 +176,6 @@ public class GameManager : MonoBehaviour {
 	}
 
 	void OnGUI() {
-//#if LOG_SERIAL
 		if (showDebugStr) {
 			string debugStr = "";
 			for (int i = 0; i < InputSystem.NUM_PLAYERS; i++) {
@@ -242,17 +184,5 @@ public class GameManager : MonoBehaviour {
 			GUI.skin.box.alignment = TextAnchor.UpperLeft;
 			GUI.Box(new Rect(0f, 0f, 300f, 900f), debugStr, GUI.skin.box);
 		}
-//#endif
-//    if(debugMode){
-//      pedTestInput = (int)(GUI.HorizontalSlider(new Rect(50, 50, 100, 30), pedTestInput, 0, 500));
-//      rotTestInput = (int)(GUI.HorizontalSlider(new Rect(50, 25, 100, 30), rotTestInput, 0, 500));
-//
-//      int[] testArr = new int[4]; // length of 4 is a debug array
-//      testArr[0] = rotTestInput;
-//      testArr[1] = pedTestInput;
-//      testArr[2] = 0;
-//      testArr[3] = 0; // defines as debug
-//      SerialInputRecieved(testArr);
-//    }
 	}
 }

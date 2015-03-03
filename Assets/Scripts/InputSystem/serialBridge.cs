@@ -6,38 +6,51 @@ using System.IO.Ports;
 using System.Threading;
  
 public class SerialBridge : MonoBehaviour {
-//	[HideInInspector]
-	public string portOne;
 	[HideInInspector]
-	public string portTwo;
-	public bool useSecond;
+	public string portOne, portTwo;
+
+	[HideInInspector]
+	public bool useFirst, useSecond;
+
 	private Thread thread;
 	SerialPort stream;// = new SerialPort("/dev/tty.usbmodem1411", 115200); 
 	SerialPort stream2;// = new SerialPort("/dev/tty.usbmodem1411", 115200); 
 
 	int baudRate = 57600;
-	int readTimeout = 20;
+	int readTimeout = 200;
 	private List<int[]> packetQueue = new List<int[]>();
 
-	bool cleanStream1 = true;
+	[HideInInspector]
+	public int port1Index = 0; // For SerialBridgeEditor. I cri evertym.
+	[HideInInspector]
+	public int port2Index = 0;
+
+	bool cleanStream = true;
 
 	private bool connected = false;
 	
 	void Start() {
 		try {
-			if(portOne == "None")
-				return;
-			stream = new SerialPort(portOne, baudRate);
-			stream.Open(); //Open the Serial Stream.
-			stream.ReadTimeout = readTimeout;
+			if(useFirst) {
+				if(portOne == "None")
+					return;
+				stream = new SerialPort(portOne, baudRate);
+				stream.Open(); //Open the Serial Stream.
+				stream.ReadTimeout = readTimeout;
+
+			}
 			if (useSecond) {
+				if(portTwo == "None")
+					return;
 				stream2 = new SerialPort(portTwo, baudRate);
 				stream2.Open(); //Open the Serial Stream.
 				stream2.ReadTimeout = readTimeout;
 			}
-			thread = new Thread(new ThreadStart(readSerial));
-			thread.Start();
-			connected = true;
+			if(useFirst || useSecond) {
+				connected = true;
+				thread = new Thread(new ThreadStart(readSerial));
+				thread.Start();
+			}
 		} catch (Exception e) {
 			Debug.Log(e.Message);
 		}
@@ -62,37 +75,39 @@ public class SerialBridge : MonoBehaviour {
 	}
 
 	private void readSerial() {
-		while (stream.IsOpen && connected) {
+		while (connected) {
 			try {
-				string[] lineToRead = stream.ReadLine().Split('|'); 
-				string[] lineToRead2 = new string[3];
-				if (useSecond) {
-					lineToRead2 = stream2.ReadLine().Split('|');
-					stream2.BaseStream.Flush(); 
-				}
-				if (lineToRead != null) {
-					lock (packetQueue) {
-						for (int i = 0; i<lineToRead.Length; i++) {
-							packetQueue.Add(parseIndyData(lineToRead [i]));
+				if(useFirst) {
+					string[] lineToRead = stream.ReadLine().Split('|');
+					if (lineToRead != null) {
+						lock (packetQueue) {
+							for (int i = 0; i < lineToRead.Length; i++) {
+								packetQueue.Add(parseIndyData(lineToRead [i]));
+							}
+
 						}
-						if (useSecond) {
-							for (int i = 0; i<lineToRead2.Length; i++) {
+					}
+					stream.BaseStream.Flush(); 
+				}
+				if (useSecond) {
+					string[] lineToRead2 = stream2.ReadLine().Split('|');
+					if (lineToRead2 != null) {
+						lock (packetQueue) {
+							for (int i = 0; i < lineToRead2.Length; i++) {
 								packetQueue.Add(parseIndyData(lineToRead2 [i]));
 							}
 						}
 					}
+					stream2.BaseStream.Flush(); 
 				}
-//				stream.DiscardInBuffer();
-				stream.BaseStream.Flush(); 
 			} catch (Exception e) { 
 				Debug.Log(e.Message);
-				//Console.WriteLine(e.Message); 
 			}
-			if(cleanStream1) {
+			if(cleanStream) {
 				lock(packetQueue) {
 					packetQueue.Clear();
 				}
-				cleanStream1 = false;
+				cleanStream = false;
 			}
 		}
 	}
@@ -100,6 +115,9 @@ public class SerialBridge : MonoBehaviour {
 	public void OnApplicationQuit () {
 		if (stream != null) {
 			stream.Close ();
+		}
+		if (stream2 != null) {
+			stream2.Close ();
 		}
 		if (thread != null) {
 		    if(thread.IsAlive) {
@@ -109,5 +127,6 @@ public class SerialBridge : MonoBehaviour {
 		}
 		
 		stream = null;
+		stream2 = null;
 	}
 }
